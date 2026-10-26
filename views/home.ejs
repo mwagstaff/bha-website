@@ -1,0 +1,53 @@
+<%- include('partials/header') %>
+<main id="main">
+  <%- include('partials/hero', {
+    large: true,
+    eyebrow: 'Since 1947',
+    heading: 'Beckenham &amp; Bromley<br><em>Historical Association</em>',
+    lede: esc(pt['home.lede']),
+    ctas: [{ href: '/events', label: 'See upcoming events' }, { href: '/membership', label: 'Become a member' }],
+  }) %>
+
+  <section class="wrap section intro">
+    <div class="intro__text">
+      <p class="eyebrow eyebrow--dark">Introduction</p>
+      <h2 class="section__title"><%= pt['home.introTitle'] %></h2>
+      <p class="lead"><%- pt['home.introLead'] %></p>
+      <p><%- pt['home.intro'] %></p>
+    </div>
+    <dl class="stats">
+      <div><dt>1906</dt><dd>Historical Association founded</dd></div>
+      <div><dt>1947</dt><dd>Beckenham &amp; Bromley branch formed</dd></div>
+      <div><dt>£10</dt><dd>for ten issues of the <em>Beckenham Historian</em></dd></div>
+    </dl>
+  </section>
+
+  <% if (next.length) { %>
+  <section class="band">
+    <div class="wrap section">
+      <div class="section__head">
+        <h2 class="section__title">Coming up</h2>
+        <a class="link-arrow" href="/events">Full programme</a>
+      </div>
+      <div class="event-grid">
+        <% next.forEach(e => { %><%- include('partials/event-card', { e }) %><% }) %>
+      </div>
+    </div>
+  </section>
+  <% } %>
+
+  <section class="wrap section">
+    <div class="section__head">
+      <h2 class="section__title">Beckenham, then</h2>
+    </div>
+    <div class="gallery">
+      <% [images.flood, images.churchHill, images.hospital].forEach(img => { %>
+        <figure class="gallery__item">
+          <img src="<%= img.src %>" alt="<%= img.caption %>" loading="lazy">
+          <figcaption><%= img.caption %></figcaption>
+        </figure>
+      <% }) %>
+    </div>
+  </section>
+</main>
+<%- include('partials/footer') %>

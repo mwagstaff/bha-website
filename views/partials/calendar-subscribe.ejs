@@ -1,0 +1,51 @@
+<section class="wrap section section--tight">
+  <div class="cal-box" id="calendar">
+    <div class="cal-box__intro">
+      <svg class="cal-box__icon" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+        <rect x="6" y="10" width="36" height="32" rx="5" fill="none" stroke="currentColor" stroke-width="3"/>
+        <path d="M6 19h36M16 6v8M32 6v8" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+        <path d="M17 30l5 5 9-10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <h2 class="cal-box__title">Put our events in your calendar</h2>
+        <p class="cal-box__lede">All our talks and outings can appear in the calendar on your phone, tablet or computer. When we add a new event, it will appear in your calendar by itself.</p>
+      </div>
+    </div>
+
+    <p class="cal-box__prompt">Which calendar do you use?</p>
+    <div class="cal-box__options">
+      <a class="cal-option" href="<%= calendar.apple %>">
+        <span class="cal-option__name">iPhone, iPad or Mac</span>
+        <span class="cal-option__hint">The Calendar app from Apple</span>
+      </a>
+      <a class="cal-option" href="<%= calendar.google %>" target="_blank" rel="noopener">
+        <span class="cal-option__name">Google Calendar</span>
+        <span class="cal-option__hint">Used on most Android phones</span>
+      </a>
+      <a class="cal-option" href="<%= calendar.outlook %>" target="_blank" rel="noopener">
+        <span class="cal-option__name">Outlook</span>
+        <span class="cal-option__hint">Including Hotmail and Live</span>
+      </a>
+    </div>
+
+    <details class="cal-box__more">
+      <summary>What happens when I press one of these?</summary>
+      <ul>
+        <li>Your calendar will open and ask if you'd like to add <strong>Beckenham &amp; Bromley HA events</strong>. Press <strong>Subscribe</strong> or <strong>Add</strong> to say yes.</li>
+        <li>Google and Outlook may ask you to sign in first, using the same details you normally use for your email.</li>
+        <li>That's all. Our events will then show in your calendar alongside your own, and new ones will be added by themselves.</li>
+        <li>If you change your mind, you can remove <strong>Beckenham &amp; Bromley HA events</strong> from your calendar's list of calendars at any time. It won't affect anything else.</li>
+      </ul>
+    </details>
+
+    <details class="cal-box__more">
+      <summary>Use a different calendar?</summary>
+      <p>Most calendars have an option to add a calendar "from the internet" or "by web address". Copy this address and paste it in there:</p>
+      <div class="cal-box__copy">
+        <input type="text" value="<%= calendar.feed %>" readonly aria-label="Calendar web address" data-copy-source>
+        <button type="button" class="btn btn--outline" data-copy>Copy</button>
+      </div>
+      <p class="muted">Or <a href="<%= calendar.download %>">download our events as a calendar file</a>. (A downloaded file won't update by itself, so you'd need to download it again for new events.)</p>
+    </details>
+  </div>
+</section>

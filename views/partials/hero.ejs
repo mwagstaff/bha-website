@@ -1,0 +1,15 @@
+<section class="hero<%= locals.large ? ' hero--large' : '' %><%= locals.compact ? ' hero--compact' : '' %>">
+  <div class="hero__img" style="background-image:url('<%= hero.src %>')" role="img" aria-label="<%= hero.caption %>"></div>
+  <div class="hero__shade" aria-hidden="true"></div>
+  <div class="hero__content">
+    <% if (locals.eyebrow) { %><p class="eyebrow"><%= eyebrow %></p><% } %>
+    <h1><%- heading %></h1>
+    <% if (locals.lede) { %><p class="hero__lede"><%- lede %></p><% } %>
+    <% if (locals.ctas) { %>
+      <div class="hero__ctas">
+        <% ctas.forEach((c, i) => { %><a class="btn<%= i ? ' btn--ghost' : '' %>" href="<%= c.href %>"><%= c.label %></a><% }) %>
+      </div>
+    <% } %>
+  </div>
+  <a class="hero__caption" href="<%= hero.source %>" rel="noopener" target="_blank"><%= hero.caption %></a>
+</section>

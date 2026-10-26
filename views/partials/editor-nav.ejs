@@ -1,0 +1,6 @@
+<%# Switches between the editor's screens. `current` is 'events', 'pages' or 'history'. %>
+<nav class="editor-nav" aria-label="Editor sections">
+  <a href="<%= editorBase %>/events"<%- current === 'events' ? ' aria-current="page"' : '' %>>Events</a>
+  <a href="<%= editorBase %>/pages"<%- current === 'pages' ? ' aria-current="page"' : '' %>>Page text</a>
+  <a href="<%= editorBase %>/history"<%- current === 'history' ? ' aria-current="page"' : '' %>>Version history</a>
+</nav>

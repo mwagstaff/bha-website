@@ -1,0 +1,42 @@
+<div class="card form-card" id="form">
+  <% if (sent) { %>
+    <div class="notice" role="status">
+      <strong>Thank you!</strong> We've received your details and will be in touch shortly.
+    </div>
+  <% } else if (locals.failed) { %>
+    <div class="notice notice--error" role="alert">
+      <strong>Sorry, your details couldn't be sent.</strong> Please try again later, or email <a href="mailto:<%= contact.programme.email %>"><%= contact.programme.email %></a>.
+    </div>
+  <% } %>
+  <h2 class="card__title"><%= formTitle %></h2>
+  <form method="post" action="/enquiry" class="form" novalidate data-enquiry-form>
+    <input type="hidden" name="formtype" value="<%= formtype %>">
+    <%# Honeypot: left empty by people, filled in by spam bots. %>
+    <div class="field" hidden aria-hidden="true">
+      <label for="f-website">Website</label>
+      <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="f-name">Name</label>
+      <input id="f-name" name="name" type="text" autocomplete="name" required>
+    </div>
+    <div class="field">
+      <label for="f-address">Address</label>
+      <textarea id="f-address" name="address" rows="3" autocomplete="street-address" required></textarea>
+    </div>
+    <div class="field field--half">
+      <label for="f-pcode">Postcode</label>
+      <input id="f-pcode" name="pcode" type="text" autocomplete="postal-code" required>
+    </div>
+    <div class="field field--half">
+      <label for="f-phone">Contact number <span class="optional">(optional)</span></label>
+      <input id="f-phone" name="phone" type="tel" autocomplete="tel">
+    </div>
+    <div class="field">
+      <label for="f-email">Email address <span class="optional">(optional)</span></label>
+      <input id="f-email" name="email" type="email" autocomplete="email">
+    </div>
+    <p class="form__error" role="alert" hidden>Please fill in your name, address and postcode.</p>
+    <button class="btn" type="submit">Submit</button>
+  </form>
+</div>

@@ -1,0 +1,55 @@
+<%- include('partials/header') %>
+<main id="main" class="editor-page">
+  <%- include('partials/hero', { compact: true, eyebrow: 'For editors', heading: 'Version history' }) %>
+
+  <section class="wrap section section--editor">
+    <%- include('partials/editor-nav', { current: 'history' }) %>
+    <p class="editor__intro">Every time the <%= what %> are saved, a copy is kept here for <%= retentionDays %> days. If something has gone wrong, you can put an earlier version back. Nothing is lost by doing this: the version on the website now is kept as a backup first.</p>
+
+    <% if (documents.length > 1) { %>
+      <div class="pedit__tabs" role="navigation" aria-label="Which history">
+        <% documents.forEach(d => { %>
+          <a class="history-tab" href="<%= editorBase %>/history?doc=<%= d.name %>"<%- d.name === doc ? ' aria-current="page"' : '' %>>History of the <%= d.label.toLowerCase() %></a>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <% if (notice) { %><div class="notice" role="status"><%= notice %></div><% } %>
+
+    <% if (!versions.length) { %>
+      <div class="card"><p>There are no saved versions yet. They'll appear here after the <%= what %> are first saved.</p></div>
+    <% } %>
+
+    <ol class="history">
+      <% versions.forEach(v => { %>
+        <li class="hcard<%= v.isLive ? ' hcard--live' : '' %><%= v.kind === 'before-restore' ? ' hcard--backup' : '' %>">
+          <div class="hcard__head">
+            <div>
+              <p class="hcard__when"><%= v.when %> <span class="hcard__ago">(<%= v.ago %>)</span></p>
+              <p class="hcard__label">
+                <%= v.label %><% if (v.from) { %>: the version from <%= v.from %><% } %>
+              </p>
+            </div>
+            <% if (v.isLive) { %><span class="hcard__live">On the website now</span><% } %>
+          </div>
+
+          <% if (!v.isLive) { %>
+            <% if (v.diff.type === 'pages') { %><%- include('partials/pages-diff', { d: v.diff.d }) %><% } else { %><%- include('partials/version-diff', { d: v.diff.d }) %><% } %>
+
+            <details class="hcard__restore">
+              <summary class="btn btn--small btn--outline"><span class="when-closed">Put this version back</span><span class="when-open">Cancel</span></summary>
+              <form method="post" action="<%= editorBase %>/history/restore" class="hcard__confirm">
+                <p><strong>Put this version back on the website?</strong> The version on the website now will be kept as a backup, so you can undo this.</p>
+                <input type="hidden" name="doc" value="<%= doc %>">
+                <input type="hidden" name="id" value="<%= v.id %>">
+                <input type="hidden" name="version" value="<%= version %>">
+                <button type="submit" class="btn btn--small">Yes, put it back</button>
+              </form>
+            </details>
+          <% } %>
+        </li>
+      <% }) %>
+    </ol>
+  </section>
+</main>
+<%- include('partials/footer') %>

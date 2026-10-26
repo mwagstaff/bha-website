@@ -1,0 +1,50 @@
+<%- include('partials/header') %>
+<main id="main">
+  <%- include('partials/hero', { eyebrow: 'Programme', heading: 'Events', lede: esc(pt['events.lede']) }) %>
+
+  <section class="wrap section">
+    <div class="info-grid">
+      <div class="card">
+        <h2 class="card__title">When</h2>
+        <p><%- pt['events.when'] %></p>
+      </div>
+      <div class="card">
+        <h2 class="card__title">Where</h2>
+        <p><%- pt['events.where'] %></p>
+        <p><a class="link-arrow" href="/contact#map">Map &amp; directions</a></p>
+      </div>
+      <div class="card">
+        <h2 class="card__title">Booking</h2>
+        <p><%- pt['events.booking'] %></p>
+        <% if (pt['events.bookingNote']) { %><p class="muted"><%= pt['events.bookingNote'] %></p><% } %>
+      </div>
+    </div>
+  </section>
+
+  <%- include('partials/calendar-subscribe') %>
+
+  <section class="wrap section section--tight">
+    <div class="section__head">
+      <h2 class="section__title">Upcoming</h2>
+      <div class="filters" role="group" aria-label="Filter events" data-filters>
+        <button type="button" aria-pressed="true" data-filter="all">All</button>
+        <button type="button" aria-pressed="false" data-filter="lecture">Lectures</button>
+        <button type="button" aria-pressed="false" data-filter="visit">Visits</button>
+        <button type="button" aria-pressed="false" data-filter="social">Social</button>
+      </div>
+    </div>
+    <div class="event-list" data-event-list>
+      <% upcoming.forEach(e => { %><%- include('partials/event-card', { e }) %><% }) %>
+    </div>
+
+    <% if (past.length) { %>
+      <details class="past">
+        <summary>Past events this season (<%= past.length %>)</summary>
+        <div class="event-list event-list--past">
+          <% past.forEach(e => { %><%- include('partials/event-card', { e }) %><% }) %>
+        </div>
+      </details>
+    <% } %>
+  </section>
+</main>
+<%- include('partials/footer') %>

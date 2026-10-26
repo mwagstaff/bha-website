@@ -1,0 +1,99 @@
+<%# What putting a version back would change, compared with the website now. `d` comes from lib/diff.js. %>
+<% const n = (count) => `${count} event${count === 1 ? '' : 's'}`; %>
+<% const nothing = !d.added.length && !d.removed.length && !d.changed.length; %>
+<details class="hcard__details">
+  <summary>
+    <% if (nothing) { %>
+      Same events as now (only small differences, such as wording in the file)
+    <% } else { %>
+      <% const parts = [d.added.length && `add back ${n(d.added.length)}`, d.removed.length && `remove ${n(d.removed.length)}`, d.changed.length && `change ${n(d.changed.length)}`].filter(Boolean); %>
+      Putting this back would <%= parts.length > 1 ? `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)}` : parts[0] %>. Show me exactly what would change
+    <% } %>
+  </summary>
+
+  <div class="vdiff">
+    <% if (d.changed.length) { %>
+      <p class="vdiff__legend">
+        <del>Crossed-out red words</del> are what the website says now, and would go.
+        <ins>Underlined green words</ins> would replace them.
+      </p>
+    <% } %>
+
+    <% if (d.added.length) { %>
+      <section class="vdiff__group">
+        <h3 class="vdiff__title vdiff__title--added">Would be added back (<%= d.added.length %>)</h3>
+        <p class="muted">These events are not on the website now. They would appear again.</p>
+        <% d.added.forEach(e => { %>
+          <article class="vevent vevent--added">
+            <p class="vevent__head"><span class="vbadge vbadge--added">Added back</span> <strong><%= e.title %></strong> <span class="vevent__date"><%= e.date %></span></p>
+            <dl class="vfields">
+              <% e.details.forEach(f => { %>
+                <div><dt><%= f.label %></dt><dd><% if (f.html) { %><%- f.html %><% } else { %><%= f.text %><% } %></dd></div>
+              <% }) %>
+            </dl>
+          </article>
+        <% }) %>
+      </section>
+    <% } %>
+
+    <% if (d.removed.length) { %>
+      <section class="vdiff__group">
+        <h3 class="vdiff__title vdiff__title--removed">Would be removed (<%= d.removed.length %>)</h3>
+        <p class="muted">These events are on the website now. They would disappear.</p>
+        <% d.removed.forEach(e => { %>
+          <article class="vevent vevent--removed">
+            <p class="vevent__head"><span class="vbadge vbadge--removed">Removed</span> <strong><%= e.title %></strong> <span class="vevent__date"><%= e.date %></span></p>
+            <dl class="vfields">
+              <% e.details.forEach(f => { %>
+                <div><dt><%= f.label %></dt><dd><% if (f.html) { %><%- f.html %><% } else { %><%= f.text %><% } %></dd></div>
+              <% }) %>
+            </dl>
+          </article>
+        <% }) %>
+      </section>
+    <% } %>
+
+    <% if (d.changed.length) { %>
+      <section class="vdiff__group">
+        <h3 class="vdiff__title vdiff__title--changed">Would be changed (<%= d.changed.length %>)</h3>
+        <% d.changed.forEach(e => { %>
+          <article class="vevent vevent--changed">
+            <p class="vevent__head"><span class="vbadge vbadge--changed">Changed</span> <strong><%= e.title %></strong> <span class="vevent__date"><%= e.date %></span></p>
+            <% e.changes.forEach(c => { %>
+              <div class="vchange">
+                <p class="vchange__label"><%= c.label %></p>
+                <div class="vchange__cols">
+                  <div class="vchange__col">
+                    <p class="vchange__head">On the website now</p>
+                    <% if (c.formattingOnly) { %>
+                      <p><%- c.nowHtml %></p>
+                    <% } else if (!c.parts.some(p => p.type === 'same' || p.type === 'removed')) { %>
+                      <p class="vchange__empty">(empty)</p>
+                    <% } else { %>
+                      <p><% c.parts.forEach(p => { if (p.type === 'same' || p.type === 'removed-space') { %><%= p.text %><% } else if (p.type === 'removed') { %><del><%= p.text %></del><% } }) %></p>
+                    <% } %>
+                  </div>
+                  <div class="vchange__col">
+                    <p class="vchange__head">After putting this version back</p>
+                    <% if (c.formattingOnly) { %>
+                      <p><%- c.thenHtml %></p>
+                    <% } else if (!c.parts.some(p => p.type === 'same' || p.type === 'added')) { %>
+                      <p class="vchange__empty">(empty)</p>
+                    <% } else { %>
+                      <p><% c.parts.forEach(p => { if (p.type === 'same' || p.type === 'added-space') { %><%= p.text %><% } else if (p.type === 'added') { %><ins><%= p.text %></ins><% } }) %></p>
+                    <% } %>
+                  </div>
+                </div>
+                <% if (c.formattingOnly) { %><p class="vchange__note">The words are the same. Only the formatting (bold, italic, underline or links) is different.</p><% } %>
+              </div>
+            <% }) %>
+          </article>
+        <% }) %>
+      </section>
+    <% } %>
+
+    <% if (d.unchanged) { %>
+      <p class="vdiff__same"><%= d.unchanged === 1 ? '1 other event' : `${d.unchanged} other events` %> would stay exactly the same.</p>
+    <% } %>
+  </div>
+</details>

@@ -1,0 +1,19 @@
+<article class="event event--<%= e.type %>">
+  <div class="event__date" aria-hidden="true">
+    <span class="event__day"><%= e.day %></span>
+    <span class="event__month"><%= e.month %> <%= e.year %></span>
+  </div>
+  <div class="event__body">
+    <p class="event__meta">
+      <span class="tag tag--<%= e.type %>"><%= { lecture: 'Lecture', visit: 'Visit', social: 'Social' }[e.type] %></span>
+      <time datetime="<%= e.date %>"><%= e.longDate %></time><% if (e.time) { %> · <%= e.time %><% } %>
+    </p>
+    <% if (e.kicker) { %><p class="event__kicker"><%= e.kicker %></p><% } %>
+    <h3 class="event__title"><%= e.title %></h3>
+    <% if (e.speaker) { %><p class="event__speaker"><%= e.speaker %></p><% } %>
+    <% if (e.location) { %><p class="event__location">at <%= e.location %></p><% } %>
+    <%# descriptionHtml/noteHtml are sanitised by lib/richtext.js %>
+    <% if (e.descriptionHtml) { %><p class="event__desc"><%- e.descriptionHtml %></p><% } %>
+    <% if (e.noteHtml) { %><p class="event__note"><%- e.noteHtml %></p><% } %>
+  </div>
+</article>

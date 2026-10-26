@@ -1,0 +1,22 @@
+<%- include('partials/header') %>
+<main id="main">
+  <%- include('partials/hero', { eyebrow: 'Further reading', heading: 'Local Links', lede: esc(pt['links.lede']) }) %>
+
+  <section class="wrap section">
+    <ol class="link-list">
+      <% pt['links.list'].forEach((l, i) => { %>
+        <li>
+          <a class="link-card" href="<%= l.url %>" rel="noopener" target="_blank">
+            <span class="link-card__num"><%= String(i + 1).padStart(2, '0') %></span>
+            <span class="link-card__body">
+              <span class="link-card__name"><%= l.name %></span>
+              <span class="link-card__desc"><%= l.description %></span>
+            </span>
+            <span class="link-card__arrow" aria-hidden="true">↗</span>
+          </a>
+        </li>
+      <% }) %>
+    </ol>
+  </section>
+</main>
+<%- include('partials/footer') %>

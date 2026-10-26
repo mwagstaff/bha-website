@@ -1,0 +1,50 @@
+<%# What putting a version of the page text back would change. `d` comes from diffPages in lib/pages.js. %>
+<details class="hcard__details">
+  <summary>
+    <% if (!d.changed.length) { %>
+      Same page text as now
+    <% } else { %>
+      Putting this back would change <%= d.changed.length === 1 ? '1 piece' : `${d.changed.length} pieces` %> of page text. Show me exactly what would change
+    <% } %>
+  </summary>
+
+  <% if (d.changed.length) { %>
+    <div class="vdiff">
+      <p class="vdiff__legend">
+        <del>Crossed-out red words</del> are what the website says now, and would go.
+        <ins>Underlined green words</ins> would replace them.
+      </p>
+      <% d.changed.forEach(c => { %>
+        <article class="vevent vevent--changed">
+          <p class="vevent__head"><span class="vbadge vbadge--changed">Changed</span> <strong><%= c.page %> page</strong> <span class="vevent__date"><%= c.label %></span></p>
+          <div class="vchange">
+            <div class="vchange__cols">
+              <div class="vchange__col">
+                <p class="vchange__head">On the website now</p>
+                <% if (c.formattingOnly) { %>
+                  <p><%- c.nowHtml %></p>
+                <% } else if (!c.parts.some(p => p.type === 'same' || p.type === 'removed')) { %>
+                  <p class="vchange__empty">(empty)</p>
+                <% } else { %>
+                  <p class="vchange__text"><% c.parts.forEach(p => { if (p.type === 'same' || p.type === 'removed-space') { %><%= p.text %><% } else if (p.type === 'removed') { %><del><%= p.text %></del><% } }) %></p>
+                <% } %>
+              </div>
+              <div class="vchange__col">
+                <p class="vchange__head">After putting this version back</p>
+                <% if (c.formattingOnly) { %>
+                  <p><%- c.thenHtml %></p>
+                <% } else if (!c.parts.some(p => p.type === 'same' || p.type === 'added')) { %>
+                  <p class="vchange__empty">(empty)</p>
+                <% } else { %>
+                  <p class="vchange__text"><% c.parts.forEach(p => { if (p.type === 'same' || p.type === 'added-space') { %><%= p.text %><% } else if (p.type === 'added') { %><ins><%= p.text %></ins><% } }) %></p>
+                <% } %>
+              </div>
+            </div>
+            <% if (c.formattingOnly) { %><p class="vchange__note">The words are the same. Only the formatting (bold, italic, underline or links) is different.</p><% } %>
+          </div>
+        </article>
+      <% }) %>
+      <% if (d.unchanged) { %><p class="vdiff__same">All other page text would stay exactly the same.</p><% } %>
+    </div>
+  <% } %>
+</details>

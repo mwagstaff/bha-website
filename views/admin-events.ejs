@@ -1,0 +1,112 @@
+<%- include('partials/header') %>
+<main id="main" class="editor-page">
+  <%- include('partials/hero', { compact: true, eyebrow: 'For editors', heading: 'Edit events' }) %>
+
+  <section class="wrap section section--editor" data-editor data-base="<%= editorBase %>">
+    <%- include('partials/editor-nav', { current: 'events' }) %>
+    <p class="editor__intro">Click <strong>Edit</strong> on an event to change it, or <strong>+ Add an event</strong> for a new one. Nothing changes on the website until you click <strong>Save changes</strong>. Every save is kept for 7 days in <a href="<%= editorBase %>/history">Version history</a>, so mistakes can be undone.</p>
+
+    <div class="editor__bar" data-bar>
+      <div class="editor__banner" data-unsaved-banner role="status" hidden>
+        <svg class="editor__banner-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3 2 21h20L12 3Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v5M12 18h.01" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+        <p><strong>You have unsaved changes</strong> <span data-unsaved-detail></span>. Press <strong>Save changes</strong> to put them on the website. If you leave this page first, they will be lost.</p>
+      </div>
+      <span class="editor__status" data-status aria-live="polite">No changes yet</span>
+      <div class="editor__actions">
+        <button type="button" class="link-button" data-undo-all hidden>Undo all changes</button>
+        <button type="button" class="btn btn--outline" data-add>+ Add an event</button>
+        <button type="button" class="btn" data-save disabled>Save changes</button>
+      </div>
+    </div>
+
+    <div data-notice></div>
+
+    <section class="editor__group" data-group="attention" hidden>
+      <h2 class="editor__group-title">Needs a look</h2>
+      <p class="muted">These aren't on the website yet. Fix them, or delete them if they're not needed.</p>
+      <div class="editor__list" data-list="attention"></div>
+    </section>
+
+    <section class="editor__group" data-group="upcoming">
+      <h2 class="editor__group-title">Upcoming events <span class="editor__count" data-count="upcoming"></span></h2>
+      <div class="editor__list" data-list="upcoming"></div>
+    </section>
+
+    <details class="editor__group editor__group--past" data-group="past">
+      <summary class="editor__group-title">Past events <span class="editor__count" data-count="past"></span></summary>
+      <p class="muted">These have already happened, so they're hidden from the website's main list.</p>
+      <div class="editor__list" data-list="past"></div>
+    </details>
+
+    <form method="post" action="<%= editorBase %>/logout" class="editor__logout">
+      <button type="submit" class="link-button">Log out</button>
+    </form>
+  </section>
+</main>
+
+<datalist id="time-options">
+  <option value="19:30"><option value="19:00"><option value="18:30"><option value="14:30"><option value="11:30"><option value="10:30"><option value="09:00">
+</datalist>
+
+<template id="tpl-event">
+  <article class="ecard" data-card>
+    <div class="ecard__preview" data-preview></div>
+    <ul class="ecard__problems" data-problems hidden></ul>
+    <div class="ecard__toolbar">
+      <button type="button" class="btn btn--small" data-action="edit" aria-expanded="false">Edit</button>
+      <button type="button" class="btn btn--small btn--outline" data-action="duplicate">Duplicate</button>
+      <span class="ecard__spacer"></span>
+      <span class="ecard__badge" data-badge hidden>Unsaved</span>
+      <button type="button" class="link-button link-button--danger" data-action="delete">Delete</button>
+      <span class="ecard__confirm" data-confirm hidden>
+        Delete this event?
+        <button type="button" class="btn btn--small btn--danger" data-action="confirm-delete">Yes, delete</button>
+        <button type="button" class="link-button" data-action="cancel-delete">Cancel</button>
+      </span>
+    </div>
+    <div class="ecard__form" data-form hidden>
+      <div class="ecard__fields">
+        <label class="field field--date"><span>Date <em>needed</em></span><input type="date" data-field="date"></label>
+        <label class="field field--time"><span>Time</span><input type="text" data-field="time" list="time-options" placeholder="e.g. 19:30" autocomplete="off"></label>
+        <label class="field field--type"><span>Type</span>
+          <select data-field="type">
+            <option value="lecture">Lecture</option>
+            <option value="visit">Visit</option>
+            <option value="social">Social</option>
+          </select>
+        </label>
+        <label class="field field--wide"><span>Title <em>needed</em></span><input type="text" data-field="title" placeholder="The talk or event name"></label>
+        <label class="field field--wide"><span>Speaker</span><input type="text" data-field="speaker" placeholder="e.g. Dr. Gabrielle Storey"></label>
+        <label class="field field--wide"><span>Intro <small>(small heading above the title)</small></span><input type="text" data-field="kicker" placeholder="e.g. AGM, followed by"></label>
+        <label class="field field--wide"><span>Location <small>(leave empty for Christ Church Hall)</small></span><input type="text" data-field="location" placeholder="e.g. Lugana Restaurant, Beckenham"></label>
+        <%- include('partials/rich-field', { field: 'description', label: 'Description', hint: '', placeholder: 'A longer description (optional)', tall: true }) %>
+        <%- include('partials/rich-field', { field: 'note', label: 'Note', hint: '(e.g. booking information)', placeholder: 'e.g. Pre-booking essential.', tall: false }) %>
+      </div>
+      <div class="ecard__form-actions">
+        <button type="button" class="btn btn--small" data-action="done">Done</button>
+      </div>
+    </div>
+  </article>
+</template>
+
+<template id="tpl-raw">
+  <article class="ecard ecard--raw" data-card>
+    <ul class="ecard__problems" data-problems></ul>
+    <label class="field field--wide"><span>The entry as it was typed</span><textarea data-raw rows="5"></textarea></label>
+    <div class="ecard__toolbar">
+      <span class="ecard__ok" data-raw-ok hidden>✓ This will now show on the website once saved.</span>
+      <span class="ecard__spacer"></span>
+      <span class="ecard__badge" data-badge hidden>Unsaved</span>
+      <button type="button" class="link-button link-button--danger" data-action="delete">Delete</button>
+      <span class="ecard__confirm" data-confirm hidden>
+        Delete this entry?
+        <button type="button" class="btn btn--small btn--danger" data-action="confirm-delete">Yes, delete</button>
+        <button type="button" class="link-button" data-action="cancel-delete">Cancel</button>
+      </span>
+    </div>
+  </article>
+</template>
+
+<script type="application/json" id="editor-data"><%- JSON.stringify(editorData).replace(/</g, '\\u003c') %></script>
+<script type="module" src="/js/editor.js?v=<%= assetVersion %>"></script>
+<%- include('partials/footer') %>

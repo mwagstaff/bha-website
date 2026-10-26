@@ -1,0 +1,30 @@
+  <footer class="site-footer">
+    <div class="wrap site-footer__inner">
+      <div>
+        <p class="site-footer__name"><span class="brand__logo site-footer__logo" aria-hidden="true"></span>Beckenham &amp; Bromley Historical Association</p>
+        <p>A branch of the <a href="https://www.history.org.uk/" rel="noopener">Historical Association</a>, founded 1906.</p>
+      </div>
+      <div>
+        <p><strong>Meetings</strong><br><%= venue.name %>, <%= venue.address %></p>
+      </div>
+      <div>
+        <p><a class="site-footer__social" href="<%= contact.twitter %>" rel="noopener" aria-label="Follow @BeckenhamHA on X"><svg class="site-footer__social-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Follow @BeckenhamHA</a></p>
+        <p class="site-footer__small">Historic photographs: public domain, via Wikimedia Commons.</p>
+        <p class="site-footer__small"><button type="button" class="linklike" data-consent-open>Cookie settings</button></p>
+      </div>
+    </div>
+    <p class="wrap site-footer__credit">Website developed by <a href="https://skynolimit.dev" rel="noopener">Sky No Limit</a></p>
+  </footer>
+
+  <div class="cookie-box" role="dialog" aria-labelledby="cookie-title" aria-live="polite" data-cookie-box hidden>
+    <p id="cookie-title"><strong>Cookies</strong></p>
+    <p>We use only essential cookies to run this site. Embedded Google content (the venue map) may set its own cookies, and we only load it if you accept.</p>
+    <div class="cookie-box__actions">
+      <button type="button" class="btn" data-consent-accept>Accept</button>
+      <button type="button" class="btn btn--outline" data-consent-decline>Decline</button>
+    </div>
+  </div>
+
+  <script src="/js/site.js?v=<%= assetVersion %>" defer></script>
+</body>
+</html>

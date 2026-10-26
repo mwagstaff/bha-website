@@ -1,0 +1,24 @@
+<%- include('partials/header') %>
+<main id="main">
+  <%- include('partials/hero', { eyebrow: 'Monthly bulletin', heading: 'The Beckenham Historian', lede: esc(pt['bulletin.lede']) }) %>
+
+  <section class="wrap section split">
+    <div class="prose">
+      <p class="lead"><%- pt['bulletin.intro'] %></p>
+
+      <div class="price">
+        <span class="price__amount"><%= pt['bulletin.price'] %></span>
+        <span class="price__label"><%- pt['bulletin.priceLabel'] %></span>
+      </div>
+
+      <h2>How to subscribe</h2>
+      <p><%- pt['bulletin.subscribe'] %></p>
+      <p><%- pt['bulletin.postIntro'] %></p>
+      <address class="postal"><% pt['bulletin.postal'].forEach((line) => { %><%= line %><br><% }) %></address>
+      <p><%- pt['bulletin.cheque'] %></p>
+    </div>
+
+    <%- include('partials/enquiry-form', { formtype: 'Bulletin Request', formTitle: 'Register your interest' }) %>
+  </section>
+</main>
+<%- include('partials/footer') %>

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title === 'Home' ? 'Beckenham & Bromley Historical Association' : `${title} · Beckenham & Bromley Historical Association` %></title>
+  <meta name="description" content="The Beckenham and Bromley branch of the Historical Association — lectures, visits and the Beckenham Historian bulletin since 1947.">
+  <meta name="theme-color" content="#1f2a24">
+  <% if (locals.noindex) { %><meta name="robots" content="noindex, nofollow"><% } %>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/css/site.css?v=<%= assetVersion %>">
+  <link rel="preload" as="image" href="<%= hero.src %>">
+</head>
+<body class="page-<%= title.toLowerCase().replace(/\s+/g, '-') %>">
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="masthead" data-masthead>
+    <div class="masthead__inner">
+      <a class="brand" href="/" aria-label="Beckenham & Bromley Historical Association — home">
+        <span class="brand__logo" aria-hidden="true"></span>
+        <span class="brand__text">
+          <span class="brand__name">Beckenham &amp; Bromley</span>
+          <span class="brand__sub">Historical Association · est. 1947</span>
+        </span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle>
+        <span class="nav-toggle__bars" aria-hidden="true"></span>
+        <span class="visually-hidden">Menu</span>
+      </button>
+
+      <nav id="site-nav" class="nav" aria-label="Main">
+        <ul>
+          <% nav.forEach(item => { const on = item.href === '/' ? path === '/' : path.startsWith(item.href); %>
+            <li><a href="<%= item.href %>"<%- on ? ' aria-current="page"' : '' %>><%= item.label %></a></li>
+          <% }) %>
+        </ul>
+      </nav>
+    </div>
+  </header>

@@ -1,0 +1,24 @@
+<%# A small formatting editor (bold, italic, underline, links) used inside each event card. %>
+<div class="field field--wide rte" data-rich>
+  <span class="rte__label" data-rich-label><%= label %><% if (hint) { %> <small><%= hint %></small><% } %></span>
+  <div class="rte__toolbar" role="toolbar" aria-label="<%= label %> formatting">
+    <button type="button" data-cmd="bold" aria-pressed="false" title="Bold (Ctrl+B)"><b>B</b> Bold</button>
+    <button type="button" data-cmd="italic" aria-pressed="false" title="Italic (Ctrl+I)"><i>I</i> Italic</button>
+    <button type="button" data-cmd="underline" aria-pressed="false" title="Underline (Ctrl+U)"><u>U</u> Underline</button>
+    <button type="button" data-cmd="link">Link</button>
+    <button type="button" data-cmd="unlink">Remove link</button>
+  </div>
+  <div class="rte__link" data-link-panel hidden>
+    <label class="rte__link-field">
+      <span>Web or email address for the link</span>
+      <input type="text" inputmode="url" autocomplete="off" placeholder="e.g. www.history.org.uk or name@example.com" data-link-input>
+    </label>
+    <div class="rte__link-actions">
+      <button type="button" class="btn btn--small" data-link-apply>Add link</button>
+      <button type="button" class="link-button" data-link-cancel>Cancel</button>
+    </div>
+  </div>
+  <p class="rte__hint" data-rich-hint hidden></p>
+  <div class="rte__area<%= tall ? ' rte__area--tall' : '' %>" contenteditable="true" role="textbox" aria-multiline="true"
+       data-field="<%= field %>" data-placeholder="<%= placeholder %>"></div>
+</div>

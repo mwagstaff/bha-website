@@ -1,0 +1,44 @@
+<%- include('partials/header') %>
+<main id="main">
+  <%- include('partials/hero', { eyebrow: 'Get in touch', heading: 'Contact Us', lede: esc(pt['contact.lede']) }) %>
+
+  <section class="wrap section">
+    <div class="info-grid info-grid--two">
+      <div class="card">
+        <h2 class="card__title">The Beckenham Historian</h2>
+        <p><%- pt['contact.editor'] %></p>
+        <p><a class="btn" href="mailto:<%= pt['contact.editorEmail'] %>">Email the editor</a></p>
+      </div>
+      <div class="card">
+        <h2 class="card__title">Events &amp; bookings</h2>
+        <p><%- pt['contact.programme'] %></p>
+        <p><a class="btn btn--outline" href="mailto:<%= pt['contact.programmeEmail'] %>?subject=Booking%20form%20request">Request booking forms</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section section--tight" id="map">
+    <div class="section__head">
+      <h2 class="section__title">Where we meet</h2>
+    </div>
+    <div class="map-layout">
+      <div class="card">
+        <p><strong><%= venue.name %></strong><br><%= venue.address %></p>
+        <h3>By train</h3>
+        <p><%- pt['contact.train'] %></p>
+        <h3>By tram</h3>
+        <p><%- pt['contact.tram'] %></p>
+        <h3>By bus</h3>
+        <p><%- pt['contact.bus'] %></p>
+      </div>
+      <div class="map">
+        <iframe data-consent-src="<%= venue.mapEmbed %>" title="Map showing Christ Church Hall, Beckenham" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen hidden></iframe>
+        <div class="map__placeholder" data-consent-placeholder>
+          <p>This map is provided by Google, which may set cookies and collect your IP address when it loads.</p>
+          <button type="button" class="btn btn--outline" data-consent-accept>Accept and show map</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<%- include('partials/footer') %>

@@ -1,0 +1,94 @@
+<%- include('partials/header') %>
+<main id="main" class="editor-page">
+  <%- include('partials/hero', { compact: true, eyebrow: 'For editors', heading: 'Edit page text' }) %>
+
+  <section class="wrap section section--editor section--wide" data-pages-editor data-base="<%= editorBase %>">
+    <%- include('partials/editor-nav', { current: 'pages' }) %>
+    <p class="editor__intro">Choose a page and change its words. The preview shows exactly how the page will look. Nothing changes on the website until you press <strong>Save changes</strong>. Every save is kept for 7 days in <a href="<%= editorBase %>/history?doc=pages">Version history</a>.</p>
+
+    <div class="editor__bar" data-bar>
+      <div class="editor__banner" data-unsaved-banner role="status" hidden>
+        <svg class="editor__banner-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3 2 21h20L12 3Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v5M12 18h.01" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+        <p><strong>You have unsaved changes</strong> <span data-unsaved-detail></span>. Press <strong>Save changes</strong> to put them on the website. If you leave this page first, they will be lost.</p>
+      </div>
+      <span class="editor__status" data-status aria-live="polite">No unsaved changes</span>
+      <div class="editor__actions">
+        <button type="button" class="link-button" data-undo-all hidden>Undo all changes</button>
+        <button type="button" class="btn" data-save disabled>Save changes</button>
+      </div>
+    </div>
+
+    <div data-notice></div>
+
+    <div class="pedit__tabs" role="tablist" aria-label="Choose a page">
+      <% editorData.pages.forEach(p => { %>
+        <button type="button" role="tab" aria-selected="false" data-page-tab="<%= p.id %>"><%= p.label %><span class="pedit__dot" data-page-dot hidden aria-label="(unsaved)"></span></button>
+      <% }) %>
+    </div>
+
+    <div class="pedit">
+      <div class="pedit__fields">
+        <% editorData.sections.forEach(s => { %>
+          <div class="card pfield" data-section="<%= s.id %>" data-page="<%= s.page %>" data-kind="<%= s.kind %>" hidden>
+            <% if (s.kind === 'rich') { %>
+              <%- include('partials/rich-field', { field: s.id, label: s.label, hint: s.hint ? `(${s.hint})` : '', placeholder: '', tall: true }) %>
+            <% } else if (s.kind === 'links') { %>
+              <p class="pfield__label"><%= s.label %> <% if (s.hint) { %><small>(<%= s.hint %>)</small><% } %></p>
+              <div class="plinks" data-links></div>
+              <button type="button" class="btn btn--small btn--outline" data-add-link>+ Add a link</button>
+            <% } else { %>
+              <label class="pfield__control">
+                <span class="pfield__label"><%= s.label %> <% if (s.hint) { %><small>(<%= s.hint %>)</small><% } %></span>
+                <% if (s.kind === 'lines') { %>
+                  <textarea rows="5" data-input></textarea>
+                <% } else { %>
+                  <input type="<%= s.kind === 'email' ? 'email' : 'text' %>" data-input<%- s.kind === 'email' ? ' autocomplete="off" spellcheck="false"' : '' %>>
+                <% } %>
+              </label>
+            <% } %>
+            <p class="pfield__problem" data-problem role="alert" hidden></p>
+          </div>
+        <% }) %>
+      </div>
+
+      <div class="pedit__preview">
+        <div class="pedit__preview-head">
+          <p class="editor__label">Preview: how the page will look</p>
+          <a class="link-arrow" href="/" target="_blank" rel="noopener" data-open-page>Open the live page</a>
+        </div>
+        <div class="pedit__frame" data-frame-wrap>
+          <iframe title="Preview of the page" sandbox="allow-same-origin" data-frame></iframe>
+        </div>
+      </div>
+    </div>
+
+    <form method="post" action="<%= editorBase %>/logout" class="editor__logout">
+      <button type="submit" class="link-button">Log out</button>
+    </form>
+  </section>
+</main>
+
+<template id="tpl-link">
+  <div class="plink" data-link>
+    <div class="plink__fields">
+      <label><span>Name</span><input type="text" data-link-field="name" placeholder="e.g. Beckenham History"></label>
+      <label><span>Web address</span><input type="text" inputmode="url" data-link-field="url" placeholder="e.g. www.beckenhamhistory.co.uk" spellcheck="false"></label>
+      <label class="plink__wide"><span>Description</span><input type="text" data-link-field="description" placeholder="A sentence about the website"></label>
+    </div>
+    <div class="plink__actions">
+      <button type="button" class="link-button" data-move="-1">Move up</button>
+      <button type="button" class="link-button" data-move="1">Move down</button>
+      <span class="ecard__spacer"></span>
+      <button type="button" class="link-button link-button--danger" data-remove>Remove</button>
+      <span class="ecard__confirm" data-confirm hidden>
+        Remove this link?
+        <button type="button" class="btn btn--small btn--danger" data-confirm-remove>Yes, remove</button>
+        <button type="button" class="link-button" data-cancel-remove>Cancel</button>
+      </span>
+    </div>
+  </div>
+</template>
+
+<script type="application/json" id="editor-data"><%- JSON.stringify(editorData).replace(/</g, '\\u003c') %></script>
+<script type="module" src="/js/pages-editor.js?v=<%= assetVersion %>"></script>
+<%- include('partials/footer') %>

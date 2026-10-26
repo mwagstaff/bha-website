@@ -1,0 +1,21 @@
+<%- include('partials/header') %>
+<main id="main">
+  <%- include('partials/hero', { eyebrow: 'Join us', heading: 'Become a Member', lede: esc(pt['membership.lede']) }) %>
+
+  <section class="wrap section split">
+    <div class="prose">
+      <p class="lead"><%- pt['membership.intro'] %></p>
+
+      <h2>Local or full membership?</h2>
+      <p><%- pt['membership.compareIntro'] %></p>
+      <ul class="compare">
+        <li><%- pt['membership.local'] %></li>
+        <li><%- pt['membership.full'] %></li>
+      </ul>
+      <p><%- pt['membership.signup'] %></p>
+    </div>
+
+    <%- include('partials/enquiry-form', { formtype: 'Membership Enquiry', formTitle: 'Membership enquiry' }) %>
+  </section>
+</main>
+<%- include('partials/footer') %>
