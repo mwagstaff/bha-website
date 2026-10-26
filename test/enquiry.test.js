@@ -41,6 +41,15 @@ test('sends through Plunk with the enquirer as reply-to', async () => {
   assert.equal(sent.reply, 'ada@example.com');
 });
 
+test('bulletin requests go to BHA_BULLETIN_TO, membership enquiries to BHA_ENQUIRY_TO', async () => {
+  const sentTo = [];
+  const fetchImpl = async (url, options) => { sentTo.push(JSON.parse(options.body).to); return new Response('{"success":true}'); };
+  const env = { ...ENV, BHA_BULLETIN_TO: 'editor@example.com' };
+  await sendEnquiry(enquiry, { env, fetchImpl });
+  await sendEnquiry({ ...enquiry, formtype: 'Membership Enquiry' }, { env, fetchImpl });
+  assert.deepEqual(sentTo, ['editor@example.com', 'secretary@example.com']);
+});
+
 test('a refused send throws', async () => {
   const fetchImpl = async () => new Response('{"success":false}', { status: 422 });
   await assert.rejects(sendEnquiry(enquiry, { env: ENV, fetchImpl }), /HTTP 422/);

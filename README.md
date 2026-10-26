@@ -69,6 +69,6 @@ Routing lives in `server-tooling/caddy/setup-caddy-cloudflare-tunnel.zsh`; deplo
 
 **Caching:** public pages and `/events.ics` send `s-maxage=300`, and a Cloudflare Cache Rule (in both the `skynolimit.dev` and `beckenham-historical-association.org` zones) makes them cacheable, so edits appear within 5 minutes. Browsers always revalidate pages (the rule respects the origin's browser TTL). `/edit-content` and `/healthcheck` are never cached.
 
-**Enquiry emails** go through Plunk (`lib/enquiry.js`) to `BHA_ENQUIRY_TO`, from `BHA_EMAIL_FROM`, with the enquirer as reply-to. Both are set in the live project's `static_env`, and `PLUNK_SECRET_KEY` comes from Bitwarden. Without all three (as on the preview), enquiries are only logged. A hidden honeypot field drops most bot submissions.
+**Enquiry emails** go through Plunk (`lib/enquiry.js`), from `BHA_EMAIL_FROM`, with the enquirer as reply-to. Membership enquiries go to `BHA_ENQUIRY_TO` (Ann) and bulletin requests to `BHA_BULLETIN_TO` (John). Both are set in the live project's `static_env`, and `PLUNK_SECRET_KEY` comes from Bitwarden. Without all three (as on the preview), enquiries are only logged. A hidden honeypot field drops most bot submissions.
 
 **DNS:** [`deploy/cloudflare-zone.txt`](deploy/cloudflare-zone.txt) is what was imported into the Cloudflare zone: apex and www go to the tunnel, plus "no mail" records (null MX, SPF `-all`, DMARC reject).
