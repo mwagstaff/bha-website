@@ -1,10 +1,14 @@
-; Cloudflare DNS for beckenham-historical-association.org (imported 2026-10-26).
+; Cloudflare DNS for beckenham-historical-association.org (nameservers moved from
+; Register.com 2026-10-26). Matches what is live in the Cloudflare zone.
 ; Website: apex and www go through sky's Cloudflare tunnel (proxied); Caddy on sky
-; redirects www to the apex. Mail: none, so the domain says so explicitly.
+; redirects www to the apex.
+; Mail: Ann's Network Solutions mailbox (ann.wagstaff@...), so MX, SPF and the
+; webmail alias copy Register.com's old zone; all DNS only. DMARC is monitor-only.
 $ORIGIN beckenham-historical-association.org.
 @             1 IN CNAME dc9d6982-2296-4427-ac54-1e654c5b8941.cfargotunnel.com.
 www           1 IN CNAME dc9d6982-2296-4427-ac54-1e654c5b8941.cfargotunnel.com.
-@             1 IN MX    0 .
-@             1 IN TXT   "v=spf1 -all"
-_dmarc        1 IN TXT   "v=DMARC1; p=reject; sp=reject; adkim=s; aspf=s"
-*._domainkey  1 IN TXT   "v=DKIM1; p="
+@             1 IN MX    10 mx02.register.com.
+@             1 IN MX    10 mx04.register.com.
+@             1 IN TXT   "v=spf1 include:spf.registeredsite.com include:spf.cloudus.oxcs.net ~all"
+_dmarc        1 IN TXT   "v=DMARC1; p=none"
+mail          1 IN CNAME webmail02.register.com.

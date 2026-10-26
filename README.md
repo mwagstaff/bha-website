@@ -71,4 +71,4 @@ Routing lives in `server-tooling/caddy/setup-caddy-cloudflare-tunnel.zsh`; deplo
 
 **Enquiry emails** go through Plunk (`lib/enquiry.js`), from `BHA_EMAIL_FROM`, with the enquirer as reply-to. Membership enquiries go to `BHA_ENQUIRY_TO` (Ann) and bulletin requests to `BHA_BULLETIN_TO` (John). Both are set in the live project's `static_env`, and `PLUNK_SECRET_KEY` comes from Bitwarden. Without all three (as on the preview), enquiries are only logged. A hidden honeypot field drops most bot submissions.
 
-**DNS:** [`deploy/cloudflare-zone.txt`](deploy/cloudflare-zone.txt) is what was imported into the Cloudflare zone: apex and www go to the tunnel, plus "no mail" records (null MX, SPF `-all`, DMARC reject).
+**DNS:** the domain is registered at Network Solutions (Register.com) with Cloudflare's nameservers. [`deploy/cloudflare-zone.txt`](deploy/cloudflare-zone.txt) mirrors the Cloudflare zone: apex and www go to the tunnel, and the MX, SPF and `mail` records keep Ann's Network Solutions mailbox (ann.wagstaff@beckenham-historical-association.org) working. Don't replace them with "no mail" records while that mailbox is in use.
