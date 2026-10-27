@@ -7,6 +7,7 @@ import express from 'express';
 import { adminRouter } from '../routes/admin.js';
 import { createHistory } from '../lib/history.js';
 import { createPagesStore } from '../lib/pages.js';
+import { createFileDoc } from '../lib/storage.js';
 import { saveEventsFile, versionOf, EditConflictError } from '../lib/events.js';
 
 const PASSWORD = 'test-password-for-unit-tests';
@@ -29,10 +30,13 @@ before(async () => {
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
   app.use((req, res, next) => { Object.assign(res.locals, { nav: [], path: req.path, contact: {}, venue: {}, images: {}, pt: loadPages().templates, esc }); next(); });
   const hero = { src: '', caption: '', source: '' };
+  const docs = {
+    events: createFileDoc(eventsFile, createHistory(path.join(dir, 'backups'))),
+    pages: createFileDoc(pagesFile, createHistory(path.join(dir, 'backups', 'pages'))),
+  };
   app.use(EDITOR, adminRouter({
-    eventsFile, hero, basePath: EDITOR,
+    docs, hero, basePath: EDITOR,
     pages: {
-      file: pagesFile, history: createHistory(path.join(dir, 'backups', 'pages')), load: loadPages,
       views: { links: () => ['links', { title: 'Links', hero }], membership: () => ['membership', { title: 'Membership', hero, sent: false }] },
       paths: { links: '/links', membership: '/membership' },
     },

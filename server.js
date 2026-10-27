@@ -2,30 +2,31 @@ import express from 'express';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { contact, venue, images } from './data/site.js';
-import { createEventsStore, ensureEventsFile, forDisplay } from './lib/events.js';
+import { forDisplay } from './lib/events.js';
 import { adminRouter } from './routes/admin.js';
-import { createHistory } from './lib/history.js';
 import { buildCalendar, CALENDAR_NAME } from './lib/ical.js';
-import { createPagesStore, MEMBERSHIP_FORM } from './lib/pages.js';
+import { MEMBERSHIP_FORM } from './lib/pages.js';
+import { openStorage } from './lib/storage.js';
 import { readEnquiry, isSpam, sendEnquiry } from './lib/enquiry.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// The live, editable events file lives in a data folder outside the deployed
-// code; content/events.txt is only the starting copy.
+// The editable events and page text (headings, introductions, contact
+// details…) and their version history: files in a data folder outside the
+// deployed code, or MongoDB with BHA_STORAGE=mongo (see lib/storage.js).
+// content/events.txt is only the starting copy; missing or unreadable page
+// text falls back to the site's original wording.
 const dataDir = process.env.BHA_DATA_DIR || path.join(__dirname, 'var');
-const eventsFile = path.join(dataDir, 'events.txt');
-ensureEventsFile(eventsFile, path.join(__dirname, 'content', 'events.txt'));
-// Timestamped versions of the events file (the last 7 days), for "Version history".
-const history = createHistory(process.env.BHA_BACKUP_DIR || path.join(dataDir, 'backups'));
-const loadEvents = createEventsStore(eventsFile);
-const backupDir = process.env.BHA_BACKUP_DIR || path.join(dataDir, 'backups');
-
-// Editable page text (headings, introductions, contact details…). Anything
-// missing or unreadable falls back to the site's original wording.
-const pagesFile = path.join(dataDir, 'pages.json');
-const pagesHistory = createHistory(path.join(backupDir, 'pages'));
-const loadPages = createPagesStore(pagesFile);
+const storage = await openStorage({
+  mode: process.env.BHA_STORAGE,
+  uri: process.env.MONGODB_URI_BHA,
+  dataDir,
+  backupDir: process.env.BHA_BACKUP_DIR || path.join(dataDir, 'backups'),
+  seedEventsFile: path.join(__dirname, 'content', 'events.txt'),
+  gitCopyDir: path.join(__dirname, 'content', 'live'),
+});
+const { loadEvents, loadPages } = storage;
+console.log(`[storage] Using ${storage.mode === 'mongo' ? 'MongoDB' : `files in ${dataDir}`}`);
 
 const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const app = express();
@@ -54,7 +55,8 @@ function splitEvents() {
 }
 
 // Used by the deploy script's post-deploy check.
-app.get('/healthcheck', (req, res) => res.json({ status: 'ok' }));
+// The site keeps working from its last copy if Mongo can't be reached, so that's reported but isn't a failure.
+app.get('/healthcheck', (req, res) => res.json({ status: 'ok', ...storage.health() }));
 
 app.use((req, res, next) => {
   res.locals = { ...res.locals, nav, path: req.path, contact, venue, images, year: new Date().getFullYear(), pt: loadPages().templates, esc: escapeHtml };
@@ -108,8 +110,8 @@ app.get('/events.ics', (req, res) => {
 // nothing else on the site links to or redirects there.
 const EDITOR_PATH = '/edit-content';
 app.use(EDITOR_PATH, adminRouter({
-  eventsFile, history, hero: images.churchHill, basePath: EDITOR_PATH,
-  pages: { file: pagesFile, history: pagesHistory, load: loadPages, views: PAGE_VIEWS, paths: PAGE_PATHS },
+  docs: storage.docs, hero: images.churchHill, basePath: EDITOR_PATH,
+  pages: { views: PAGE_VIEWS, paths: PAGE_PATHS },
 }));
 
 
@@ -125,10 +127,15 @@ app.post('/enquiry', async (req, res) => {
   if (isSpam(req.body)) return res.redirect(303, `${back}?sent=1#form`);
   const enquiry = readEnquiry(req.body);
   if (!enquiry) return res.status(400).send('Name, address and postcode are required.');
+  // Every enquiry is also kept in Mongo (when used), so none is lost if the email fails.
+  const to = loadPages().values[form.to];
   try {
-    if (!(await sendEnquiry(enquiry, { to: loadPages().values[form.to] }))) console.log(`[enquiry] email not configured; ${enquiry.formtype}:`, enquiry);
+    const sent = await sendEnquiry(enquiry, { to });
+    if (!sent) console.log(`[enquiry] email not configured; ${enquiry.formtype}:`, enquiry);
+    await storage.recordEnquiry({ ...enquiry, to, status: sent ? 'sent' : 'not-sent' });
   } catch (err) {
     console.error(`[enquiry] ${err.message}; ${enquiry.formtype}:`, enquiry);
+    await storage.recordEnquiry({ ...enquiry, to, status: 'failed', error: err.message });
     return res.redirect(303, `${back}?failed=1#form`);
   }
   res.redirect(303, `${back}?sent=1#form`);

@@ -1,6 +1,9 @@
 #!/usr/bin/env zsh
-# Copies the content edited on the website (events.txt and pages.json) into
-# content/<site>/ and commits it, so edits made in the editor end up in git.
+# Copies the content edited on the website (the events and page text) into
+# content/<site>/events.txt and pages.json and commits it, so edits made in the
+# editor end up in git. It runs scripts/export-content.js on the server, which
+# reads them from wherever the site keeps them (files or Mongo); if that script
+# isn't deployed there yet, the files are copied instead.
 #
 #   scripts/pull-content.zsh [live|preview] [--no-commit]
 #
@@ -21,10 +24,11 @@ for arg in "$@"; do
 done
 
 case "$site" in
-  live) host=sky ;;
-  preview) host=mini ;;
+  live) host=sky; node_bin='~/.local/share/bha-website/runtime/node24/bin/node' ;;
+  preview) host=mini; node_bin=/opt/homebrew/bin/node ;;
 esac
 remote_dir='~/.local/share/bha-website'
+app_dir='~/dev/bha-website'
 
 repo=${0:A:h:h}
 dest="$repo/content/$site"
@@ -33,13 +37,36 @@ trap 'rm -rf "$tmp"' EXIT
 cd "$repo"
 
 echo "==> Copying content from the $site site ($host)..."
-if ! rsync -a --timeout=20 "$host:$remote_dir/events.txt" "$tmp/" 2>"$tmp/rsync.err"; then
-  echo "Error: couldn't copy events.txt from $host:" >&2
-  cat "$tmp/rsync.err" >&2
+# The site's own environment (data folder, storage, Mongo address), as its service gets it.
+remote="cd $app_dir && test -f scripts/export-content.js || exit 3; set -a; for f in .static-config-*.env.sh .bw-secrets.env.sh; do [ -f \"\$f\" ] && . \"./\$f\"; done; set +a; $node_bin scripts/export-content.js"
+set +e
+ssh -o ConnectTimeout=10 "$host" "$remote" >"$tmp/export.json" 2>"$tmp/export.err"
+exit_code=$?
+set -e
+if (( exit_code == 0 )); then
+  node --input-type=module -e '
+    import fs from "node:fs";
+    const [dir] = process.argv.slice(1);
+    const { storage, events, pages } = JSON.parse(fs.readFileSync(`${dir}/export.json`, "utf8"));
+    if (!events) { console.error("Error: the site returned no events."); process.exit(1); }
+    fs.writeFileSync(`${dir}/events.txt`, events);
+    if (pages) fs.writeFileSync(`${dir}/pages.json`, pages);
+    console.log(`    (read from ${storage === "mongo" ? "Mongo" : "files"})`);
+  ' "$tmp"
+elif (( exit_code == 3 )); then
+  # Not deployed there yet: copy the files.
+  if ! rsync -a --timeout=20 "$host:$remote_dir/events.txt" "$tmp/" 2>"$tmp/rsync.err"; then
+    echo "Error: couldn't copy events.txt from $host:" >&2
+    cat "$tmp/rsync.err" >&2
+    exit 1
+  fi
+  # pages.json only exists once someone has saved page text.
+  rsync -a --timeout=20 "$host:$remote_dir/pages.json" "$tmp/" 2>/dev/null || true
+else
+  echo "Error: couldn't read the content on $host:" >&2
+  cat "$tmp/export.err" >&2
   exit 1
 fi
-# pages.json only exists once someone has saved page text.
-rsync -a --timeout=20 "$host:$remote_dir/pages.json" "$tmp/" 2>/dev/null || true
 
 mkdir -p "$dest"
 cp "$tmp/events.txt" "$dest/events.txt"

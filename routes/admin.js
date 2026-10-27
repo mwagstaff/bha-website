@@ -1,16 +1,16 @@
 // The password-protected events editor (mounted at EDITOR_PATH in server.js).
 //
 // The page edits events as cards; the browser sends the cards back as JSON and
-// the server writes them into the plain-text events file.
+// the server saves them as the events document (see lib/storage.js for where
+// documents are kept: files or Mongo).
 
 import express from 'express';
 import ejs from 'ejs';
-import fs from 'node:fs';
 import path from 'node:path';
 import { createAuth, sameOrigin } from '../lib/auth.js';
 import { RICH_FIELDS, sanitizeRich } from '../lib/richtext.js';
-import { forDisplay, versionOf, saveEventsFile, EditConflictError, parseToItems, itemsToText, checkItem, parseEvents, EDITABLE_FIELDS } from '../lib/events.js';
-import { createHistory, UnknownVersionError, RETENTION_DAYS } from '../lib/history.js';
+import { forDisplay, versionOf, EditConflictError, parseToItems, itemsToText, checkItem, parseEvents, EDITABLE_FIELDS } from '../lib/events.js';
+import { UnknownVersionError, RETENTION_DAYS } from '../lib/history.js';
 import { diffEvents } from '../lib/diff.js';
 import { PAGES, SECTIONS, cleanValue, resolveValues, forTemplates, toFileText, parseFileText, problemWith, diffPages } from '../lib/pages.js';
 
@@ -54,7 +54,8 @@ const KIND_LABELS = {
   earlier: 'Earlier version',
 };
 
-export function adminRouter({ eventsFile, history = createHistory(path.join(path.dirname(eventsFile), 'backups')), hero, basePath = '/edit-content', pages = null }) {
+// docs.events and docs.pages each have read(), save(text, options) and a version history.
+export function adminRouter({ docs, hero, basePath = '/edit-content', pages = null }) {
   // The login cookie is only sent to the editor's own pages.
   const auth = createAuth({ cookiePath: basePath });
   const router = express.Router();
@@ -116,7 +117,7 @@ export function adminRouter({ eventsFile, history = createHistory(path.join(path
   router.get('/events', requireLogin, async (req, res, next) => {
     try {
       auth.renew(req, res);
-      const text = fs.readFileSync(eventsFile, 'utf8');
+      const text = await docs.events.read();
       const items = await describe(req, parseToItems(text));
       res.render('admin-events', { title: 'Edit events', editorData: { version: versionOf(text), items } });
     } catch (err) {
@@ -148,7 +149,7 @@ export function adminRouter({ eventsFile, history = createHistory(path.join(path
     }
     try {
       const text = itemsToText(kept);
-      const version = saveEventsFile(eventsFile, text, { expectedVersion: req.body.version, history });
+      const version = await docs.events.save(text, { expectedVersion: req.body.version });
       console.log(`[admin] Events saved (${kept.length} entries)`);
       res.json({ version, items: await describe(req, parseToItems(text)) });
     } catch (err) {
@@ -162,8 +163,7 @@ export function adminRouter({ eventsFile, history = createHistory(path.join(path
 
   // ---- Page text ----
 
-  const readFile = (file) => (fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '');
-  const livePageValues = () => resolveValues(parseFileText(readFile(pages.file)) || {});
+  const livePageValues = async () => resolveValues(parseFileText(await docs.pages.read()) || {});
 
   // Only known sections, each tidied; anything unusable keeps its current value.
   function mergePageValues(submitted, current) {
@@ -180,25 +180,36 @@ export function adminRouter({ eventsFile, history = createHistory(path.join(path
   }
 
   if (pages) {
-    router.get('/pages', requireLogin, (req, res) => {
-      auth.renew(req, res);
-      const text = readFile(pages.file);
-      res.render('admin-pages', {
-        title: 'Edit page text',
-        editorData: {
-          version: versionOf(text),
-          values: livePageValues(),
-          pages: PAGES,
-          sections: SECTIONS.map(({ id, page, kind, label, hint }) => ({ id, page, kind, label, hint: hint || '' })),
-        },
-      });
+    router.get('/pages', requireLogin, async (req, res, next) => {
+      try {
+        auth.renew(req, res);
+        const text = await docs.pages.read();
+        res.render('admin-pages', {
+          title: 'Edit page text',
+          editorData: {
+            version: versionOf(text),
+            values: resolveValues(parseFileText(text) || {}),
+            pages: PAGES,
+            sections: SECTIONS.map(({ id, page, kind, label, hint }) => ({ id, page, kind, label, hint: hint || '' })),
+          },
+        });
+      } catch (err) {
+        next(err);
+      }
     });
 
     // The real page, drawn with the unsaved text, for the preview frame.
-    router.post('/pages/preview', requireLogin, sameOrigin, json, (req, res) => {
+    router.post('/pages/preview', requireLogin, sameOrigin, json, async (req, res) => {
       const pageId = String(req.body?.page || '');
       if (!pages.views[pageId]) return res.status(400).json({ error: 'Unknown page.' });
-      const { values, problems } = mergePageValues(req.body?.values, livePageValues());
+      let merged;
+      try {
+        merged = mergePageValues(req.body?.values, await livePageValues());
+      } catch (err) {
+        console.error('[admin] Page preview failed:', err);
+        return res.status(500).json({ error: 'Preview failed' });
+      }
+      const { values, problems } = merged;
       const [view, locals] = pages.views[pageId](req);
       res.render(view, { ...locals, pt: forTemplates(values), path: pages.paths[pageId], noindex: true }, (err, html) => {
         if (err) {
@@ -216,15 +227,17 @@ export function adminRouter({ eventsFile, history = createHistory(path.join(path
       });
     });
 
-    router.post('/pages', requireLogin, sameOrigin, json, (req, res) => {
+    router.post('/pages', requireLogin, sameOrigin, json, async (req, res) => {
       if (!req.body?.values || typeof req.body.values !== 'object') {
         return res.status(400).json({ error: 'The changes were not understood, so nothing was saved.' });
       }
       try {
-        const { values, problems } = mergePageValues(req.body.values, livePageValues());
+        const liveText = await docs.pages.read();
+        const live = resolveValues(parseFileText(liveText) || {});
+        const { values, problems } = mergePageValues(req.body.values, live);
         // The very first save: keep the site's original wording in the history too.
-        if (!fs.existsSync(pages.file) && versionOf('') === req.body.version) pages.history.snapshot(toFileText(livePageValues()), 'earlier');
-        const version = saveEventsFile(pages.file, toFileText(values), { expectedVersion: req.body.version, history: pages.history });
+        if (!liveText && versionOf('') === req.body.version) await docs.pages.history.snapshot(toFileText(live), 'earlier');
+        const version = await docs.pages.save(toFileText(values), { expectedVersion: req.body.version });
         console.log('[admin] Page text saved');
         res.json({ version, values, problems });
       } catch (err) {
@@ -241,12 +254,12 @@ export function adminRouter({ eventsFile, history = createHistory(path.join(path
 
   const DOCUMENTS = {
     events: {
-      label: 'Events', file: eventsFile, history,
+      label: 'Events', doc: docs.events,
       compare: (liveText, text) => ({ type: 'events', d: diffEvents(parseEvents(liveText).events, parseEvents(text).events) }),
     },
     ...(pages && {
       pages: {
-        label: 'Page text', file: pages.file, history: pages.history,
+        label: 'Page text', doc: docs.pages,
         compare: (liveText, text) => ({
           type: 'pages',
           d: diffPages(resolveValues(parseFileText(liveText) || {}), resolveValues(parseFileText(text) || {})),
@@ -256,15 +269,24 @@ export function adminRouter({ eventsFile, history = createHistory(path.join(path
   };
   const docFor = (name) => (Object.hasOwn(DOCUMENTS, name) ? name : 'events');
 
-  router.get('/history', requireLogin, (req, res) => {
+  router.get('/history', requireLogin, async (req, res, next) => {
+    try {
+      await showHistory(req, res);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  async function showHistory(req, res) {
     auth.renew(req, res);
     const docName = docFor(req.query.doc);
     const doc = DOCUMENTS[docName];
-    const liveText = readFile(doc.file);
+    const liveText = await doc.doc.read();
     const liveHash = versionOf(liveText);
     let liveMarked = false;
-    const versions = doc.history.entries().map((entry) => {
-      const { text } = doc.history.read(entry.id);
+    const texts = [];
+    for (const entry of await doc.doc.history.entries()) texts.push({ entry, text: (await doc.doc.history.read(entry.id)).text });
+    const versions = texts.map(({ entry, text }) => {
       // The newest copy of what's on the website now is marked as "live".
       const isLive = !liveMarked && versionOf(text) === liveHash;
       if (isLive) liveMarked = true;
@@ -285,30 +307,38 @@ export function adminRouter({ eventsFile, history = createHistory(path.join(path
       title: 'Version history', versions, version: liveHash, notice, retentionDays: RETENTION_DAYS,
       doc: docName, what, documents: Object.entries(DOCUMENTS).map(([name, d]) => ({ name, label: d.label })),
     });
+  }
+
+  router.post('/history/restore', requireLogin, sameOrigin, form, async (req, res, next) => {
+    try {
+      await restore(req, res);
+    } catch (err) {
+      next(err);
+    }
   });
 
-  router.post('/history/restore', requireLogin, sameOrigin, form, (req, res) => {
+  async function restore(req, res) {
     const docName = docFor(req.body.doc);
     const doc = DOCUMENTS[docName];
     const back = (query) => res.redirect(`${basePath}/history?doc=${docName}&${query}=1`);
     let entry;
     try {
-      entry = doc.history.read(String(req.body.id || ''));
+      entry = await doc.doc.history.read(String(req.body.id || ''));
     } catch (err) {
       if (err instanceof UnknownVersionError) return back('missing');
       throw err;
     }
-    const liveText = readFile(doc.file);
+    const liveText = await doc.doc.read();
     if (versionOf(entry.text) === versionOf(liveText)) return back('same');
     try {
-      saveEventsFile(doc.file, entry.text, { expectedVersion: String(req.body.version || ''), history: doc.history, kind: 'restored', from: entry.savedAt });
+      await doc.doc.save(entry.text, { expectedVersion: String(req.body.version || ''), kind: 'restored', from: entry.savedAt });
       console.log(`[admin] Restored ${docName} version ${entry.id}`);
       back('restored');
     } catch (err) {
       if (err instanceof EditConflictError) return back('conflict');
       throw err;
     }
-  });
+  }
 
   return router;
 }
