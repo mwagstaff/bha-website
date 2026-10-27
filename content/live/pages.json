@@ -1,0 +1,56 @@
+{
+  "home.lede": "Lectures, visits and good company for everyone with an interest in the past.",
+  "home.introTitle": "One of an international network of branches",
+  "home.introLead": "The Beckenham and Bromley branch of the <a href=\"https://www.history.org.uk/\">Historical Association</a> is one of an international network of branches, and is located in the United Kingdom.",
+  "home.intro": "The Historical Association itself was founded in 1906, with the Beckenham and Bromley branch being set up in 1947. The Association is a voluntary organisation for all people, whether professional or amateur historians, who have an interest in the past.<br><br>Full details of all <a href=\"/events\">events</a> can be found in the branch's monthly <a href=\"/bulletin\">bulletin</a>, the <i>Beckenham Historian</i>, which can be obtained directly from the editor at a cost of £10.00 per 10 issues.",
+  "events.lede": "Thursday evening lectures, guided visits, outings and the occasional fish supper.",
+  "events.when": "Meetings, as scheduled in the programme, take place on <b>Thursdays at 7.30 p.m.</b> in Beckenham unless otherwise stated. We serve tea and coffee before the meeting.",
+  "events.where": "All Beckenham lectures take place in <b>Christ Church Hall</b>, Fairfield Road, just off Beckenham High Street, Beckenham BR3 3LE.",
+  "events.booking": "Email <a href=\"mailto:john.wagstaff176@gmail.com?subject=Booking%20form%20request\">Mrs. Ann Wagstaff</a>, Programme Secretary, to request booking forms.",
+  "events.bookingNote": "We follow all Government public health guidelines.",
+  "membership.lede": "The branch is always happy to welcome new members!",
+  "membership.intro": "If you are interested in joining as a local branch member, you can download <a href=\"http://www.beckenham-historical-association.org/membershipA.pdf\">the Branch Membership Form</a> or simply complete this form and we will send you details about our branch.",
+  "membership.compareIntro": "If you wish, you may sign up for full, rather than just local, Historical Association membership.",
+  "membership.local": "<b>Local member</b> — attend all branch events.",
+  "membership.full": "<b>Full HA member</b> — attend meetings at other branches, educational conferences, national and international visits, receive HA publications, use numerous resources on the national website and more besides.",
+  "membership.signup": "To sign up for full membership, please visit the Historical Association <a href=\"https://www.history.org.uk/\">membership</a> page.",
+  "bulletin.lede": "The complete programme of branch events, plus a selection of history-related articles.",
+  "bulletin.intro": "The <i>Beckenham Historian</i> is a monthly branch bulletin, containing a complete listing of upcoming branch <a href=\"/events\">events</a> as well as a selection of history-related articles.",
+  "bulletin.price": "£10",
+  "bulletin.priceLabel": "for ten consecutive issues. You don't need to be a branch <a href=\"/membership\">member</a> to subscribe.",
+  "bulletin.subscribe": "To register your interest, complete the form or <a href=\"mailto:john.wagstaff176@gmail.com?subject=Beckenham%20Historian\">email Mr. John Wagstaff</a>, and we will contact you to arrange your subscription details.",
+  "bulletin.postIntro": "To subscribe immediately, print this page and post it to:",
+  "bulletin.postal": "Mr. J. S. Wagstaff\n182 Devonshire Way\nShirley\nCroydon\nCR0 8BX",
+  "bulletin.cheque": "enclosing a cheque for £10.00 made payable to <b>J S Wagstaff</b>.",
+  "links.lede": "Other organisations and websites for the curious local historian.",
+  "links.list": [
+    {
+      "name": "Ripley Arts Centre",
+      "url": "http://www.bromleyarts.com/",
+      "description": "Website for a flourishing arts centre which has over one hundred affiliated arts organisations."
+    },
+    {
+      "name": "Beckenham History",
+      "url": "http://www.beckenhamhistory.co.uk/",
+      "description": "An important and evolving website for those interested in the history of Beckenham."
+    },
+    {
+      "name": "Beckenham Net",
+      "url": "http://www.beckenham.net/",
+      "description": "Informative site for the town in which we hold our meetings."
+    },
+    {
+      "name": "Bromley Signpost",
+      "url": "http://www.bromley.gov.uk/",
+      "description": "Excellent official London Borough of Bromley site."
+    }
+  ],
+  "contact.lede": "If you have any questions or comments, please don't hesitate to get in touch!",
+  "contact.editor": "Mr. John Wagstaff, Editor of the Beckenham Historian.",
+  "contact.editorEmail": "john.wagstaff176@gmail.com",
+  "contact.programme": "Mrs. Ann Wagstaff, Programme Secretary.",
+  "contact.programmeEmail": "john.wagstaff176@gmail.com",
+  "contact.train": "Clock House (from Charing Cross) or Beckenham Junction (from Victoria).",
+  "contact.tram": "Trams from Wimbledon and Croydon terminate at Beckenham Junction.",
+  "contact.bus": "Routes 54, 194, 227 and 358 stop nearby."
+}

@@ -3,16 +3,21 @@
   <%- include('partials/hero', { eyebrow: 'Get in touch', heading: 'Contact Us', lede: esc(pt['contact.lede']) }) %>
 
   <section class="wrap section">
-    <div class="info-grid info-grid--two">
+    <div class="info-grid">
       <div class="card">
         <h2 class="card__title">The Beckenham Historian</h2>
-        <p><%- pt['contact.editor'] %></p>
+        <p><%= pt['contact.editorName'] %><% if (pt['contact.editorRole']) { %>, <%= pt['contact.editorRole'] %><% } %>.</p>
         <p><a class="btn" href="mailto:<%= pt['contact.editorEmail'] %>">Email the editor</a></p>
       </div>
       <div class="card">
         <h2 class="card__title">Events &amp; bookings</h2>
-        <p><%- pt['contact.programme'] %></p>
+        <p><%= pt['contact.programmeName'] %><% if (pt['contact.programmeRole']) { %>, <%= pt['contact.programmeRole'] %><% } %>.</p>
         <p><a class="btn btn--outline" href="mailto:<%= pt['contact.programmeEmail'] %>?subject=Booking%20form%20request">Request booking forms</a></p>
+      </div>
+      <div class="card">
+        <h2 class="card__title">General enquiries</h2>
+        <p><%= pt['contact.generalName'] %><% if (pt['contact.generalRole']) { %>, <%= pt['contact.generalRole'] %><% } %>.</p>
+        <p><a class="btn btn--outline" href="mailto:<%= pt['contact.generalEmail'] %>?subject=General%20enquiry">Send an email</a></p>
       </div>
     </div>
   </section>

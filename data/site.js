@@ -3,6 +3,7 @@
 export const contact = {
   editor: { name: 'Mr. John Wagstaff', role: 'Editor of the Beckenham Historian', email: 'john.wagstaff176@gmail.com' },
   programme: { name: 'Mrs. Ann Wagstaff', role: 'Programme Secretary', email: 'john.wagstaff176@gmail.com' },
+  general: { name: 'Mrs. Ann Wagstaff', role: 'Programme Secretary', email: 'ann.wagstaff@beckenham-historical-association.org' },
   postal: 'Mr. J. S. Wagstaff, 182 Devonshire Way, Shirley, Croydon, CR0 8BX',
   twitter: 'https://twitter.com/BeckenhamHA',
 };

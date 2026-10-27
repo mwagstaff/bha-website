@@ -15,7 +15,7 @@
       </div>
       <div class="card">
         <h2 class="card__title">Booking</h2>
-        <p><%- pt['events.booking'] %></p>
+        <p>Email <a href="mailto:<%= pt['events.bookingEmail'] %>?subject=Booking%20form%20request"><%= pt['events.bookingName'] %></a>,<% if (pt['events.bookingRole']) { %> <%= pt['events.bookingRole'] %>,<% } %> <%- pt['events.bookingText'] %></p>
         <% if (pt['events.bookingNote']) { %><p class="muted"><%= pt['events.bookingNote'] %></p><% } %>
       </div>
     </div>

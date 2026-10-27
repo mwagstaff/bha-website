@@ -5,7 +5,7 @@
     </div>
   <% } else if (locals.failed) { %>
     <div class="notice notice--error" role="alert">
-      <strong>Sorry, your details couldn't be sent.</strong> Please try again later, or email <a href="mailto:<%= contact.programme.email %>"><%= contact.programme.email %></a>.
+      <strong>Sorry, your details couldn't be sent.</strong> Please try again later, or email <a href="mailto:<%= pt['contact.programmeEmail'] %>"><%= pt['contact.programmeEmail'] %></a>.
     </div>
   <% } %>
   <h2 class="card__title"><%= formTitle %></h2>

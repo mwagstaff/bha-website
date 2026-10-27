@@ -6,7 +6,7 @@ import { createEventsStore, ensureEventsFile, forDisplay } from './lib/events.js
 import { adminRouter } from './routes/admin.js';
 import { createHistory } from './lib/history.js';
 import { buildCalendar, CALENDAR_NAME } from './lib/ical.js';
-import { createPagesStore } from './lib/pages.js';
+import { createPagesStore, MEMBERSHIP_FORM } from './lib/pages.js';
 import { readEnquiry, isSpam, sendEnquiry } from './lib/enquiry.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -113,14 +113,20 @@ app.use(EDITOR_PATH, adminRouter({
 }));
 
 
-// Membership and bulletin enquiries (the PHP site posted to formSubmit.php).
+// Membership and bulletin enquiries (the PHP site posted to formSubmit.php):
+// each form's page, and the page-text setting saying where it's sent.
+const ENQUIRY_FORMS = {
+  'Membership Enquiry': { back: '/membership', to: 'membership.enquiryTo' },
+  'Bulletin Request': { back: '/bulletin', to: 'bulletin.enquiryTo' },
+};
 app.post('/enquiry', async (req, res) => {
-  const back = req.body.formtype === 'Bulletin Request' ? '/bulletin' : '/membership';
+  const form = ENQUIRY_FORMS[req.body.formtype] || ENQUIRY_FORMS['Membership Enquiry'];
+  const back = form.back;
   if (isSpam(req.body)) return res.redirect(303, `${back}?sent=1#form`);
   const enquiry = readEnquiry(req.body);
   if (!enquiry) return res.status(400).send('Name, address and postcode are required.');
   try {
-    if (!(await sendEnquiry(enquiry))) console.log(`[enquiry] email not configured; ${enquiry.formtype}:`, enquiry);
+    if (!(await sendEnquiry(enquiry, { to: loadPages().values[form.to] }))) console.log(`[enquiry] email not configured; ${enquiry.formtype}:`, enquiry);
   } catch (err) {
     console.error(`[enquiry] ${err.message}; ${enquiry.formtype}:`, enquiry);
     return res.redirect(303, `${back}?failed=1#form`);
@@ -131,6 +137,8 @@ app.post('/enquiry', async (req, res) => {
 // Keep old PHP URLs working.
 const legacy = { '/index.php': '/', '/events.php': '/events', '/membership.php': '/membership', '/bulletin.php': '/bulletin', '/links.php': '/links', '/contactus.php': '/contact' };
 for (const [from, to] of Object.entries(legacy)) app.get(from, (req, res) => res.redirect(301, to));
+// The old site's membership form, linked from elsewhere on the web.
+app.get('/membershipA.pdf', (req, res) => res.redirect(302, MEMBERSHIP_FORM));
 
 app.use((req, res) => res.status(404).render('404', { title: 'Not found', hero: images.flood }));
 

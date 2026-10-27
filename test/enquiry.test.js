@@ -54,3 +54,10 @@ test('a refused send throws', async () => {
   const fetchImpl = async () => new Response('{"success":false}', { status: 422 });
   await assert.rejects(sendEnquiry(enquiry, { env: ENV, fetchImpl }), /HTTP 422/);
 });
+
+test('a recipient chosen in the editor wins over the environment', async () => {
+  let sent;
+  const fetchImpl = async (url, options) => { sent = JSON.parse(options.body); return new Response('{"success":true}'); };
+  await sendEnquiry(enquiry, { to: 'chosen@example.com', env: { ...ENV, BHA_BULLETIN_TO: 'editor@example.com' }, fetchImpl });
+  assert.equal(sent.to, 'chosen@example.com');
+});

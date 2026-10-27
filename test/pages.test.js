@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { SECTIONS, resolveValues, forTemplates, cleanValue, createPagesStore, diffPages, toFileText } from '../lib/pages.js';
+import { SECTIONS, resolveValues, forTemplates, cleanValue, createPagesStore, diffPages, toFileText, problemWith, MEMBERSHIP_FORM, withoutPrivate } from '../lib/pages.js';
 
 const section = (id) => SECTIONS.find((s) => s.id === id);
 
@@ -67,4 +67,22 @@ test('comparing versions lists only the sections that differ', () => {
   assert.deepEqual(changed.map((c) => [c.page, c.label]), [['Events', '"When" box'], ['Bulletin', 'Price']]);
   assert.equal(changed[0].formattingOnly, true);
   assert.equal(unchanged, SECTIONS.length - 2);
+});
+
+test('contact names can be changed but not emptied; roles can be left out', () => {
+  assert.equal(cleanValue(section('events.bookingName'), ' Mr. A. Person '), 'Mr. A. Person');
+  assert.equal(cleanValue(section('events.bookingName'), '   '), undefined);
+  assert.equal(cleanValue(section('events.bookingRole'), ''), '');
+  assert.match(problemWith(section('contact.editorName'), ''), /can't be left empty/);
+});
+
+test('the old membership form link saved by the first version of the site is updated', () => {
+  const values = resolveValues({ 'membership.intro': 'Download <a href="http://www.beckenham-historical-association.org/membershipA.pdf">the form</a>.' });
+  assert.equal(values['membership.intro'], `Download <a href="${MEMBERSHIP_FORM}">the form</a>.`);
+  assert.ok(fs.existsSync(path.join(import.meta.dirname, '..', 'public', MEMBERSHIP_FORM)), 'the form is in public/');
+});
+
+test('where the forms are sent is left out of copies kept in git', () => {
+  const saved = { 'home.lede': 'Hello', 'membership.enquiryTo': 'ann@example.org', 'bulletin.enquiryTo': 'john@example.org' };
+  assert.deepEqual(withoutPrivate(saved), { 'home.lede': 'Hello' });
 });
