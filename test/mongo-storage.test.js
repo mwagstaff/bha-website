@@ -198,3 +198,16 @@ test('the editor saves, lists and restores versions in Mongo', async () => {
     delete process.env.BHA_EDITOR_PASSWORD;
   }
 });
+
+test('after a save or restore, onSaved runs once the public pages have the change', async () => {
+  const seen = [];
+  const dataDir = dataFolder();
+  const storage = await openStorage({
+    mode: 'mongo', uri: `${mongod.getUri()}bha_test_${++dbCount}`, dataDir, backupDir: path.join(dataDir, 'backups'),
+    seedEventsFile: new URL('../content/events.txt', import.meta.url).pathname,
+    onSaved: async (name) => seen.push([name, storage.loadEvents().events[0].title]),
+  });
+  opened.push(storage);
+  await storage.docs.events.save('Date: 5/5/2099\nTitle: Saved\n', { expectedVersion: versionOf(await storage.docs.events.read()) });
+  assert.deepEqual(seen, [['events', 'Saved']]);
+});

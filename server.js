@@ -7,6 +7,7 @@ import { adminRouter } from './routes/admin.js';
 import { buildCalendar, CALENDAR_NAME } from './lib/ical.js';
 import { MEMBERSHIP_FORM } from './lib/pages.js';
 import { openStorage } from './lib/storage.js';
+import { createCachePurger } from './lib/cdn.js';
 import { readEnquiry, isSpam, sendEnquiry } from './lib/enquiry.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -17,7 +18,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // content/events.txt is only the starting copy; missing or unreadable page
 // text falls back to the site's original wording.
 const dataDir = process.env.BHA_DATA_DIR || path.join(__dirname, 'var');
+// After a save, Cloudflare's copies of the public pages are cleared so the edit shows straight away.
+const PUBLIC_PAGE_PATHS = ['/', '/events', '/membership', '/bulletin', '/links', '/contact', '/events.ics'];
+const cdn = createCachePurger({ paths: PUBLIC_PAGE_PATHS });
 const storage = await openStorage({
+  onSaved: cdn.purge,
   mode: process.env.BHA_STORAGE,
   uri: process.env.MONGODB_URI_BHA,
   dataDir,
@@ -27,6 +32,7 @@ const storage = await openStorage({
 });
 const { loadEvents, loadPages } = storage;
 console.log(`[storage] Using ${storage.mode === 'mongo' ? 'MongoDB' : `files in ${dataDir}`}`);
+if (!cdn.enabled) console.log('[cdn] CLOUDFLARE_PURGE_TOKEN or BHA_PUBLIC_HOSTS not set; edits reach Cloudflare within 5 minutes.');
 
 const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const app = express();
