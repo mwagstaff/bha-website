@@ -1,28 +1,9 @@
 # ------------------------------
 #  BECKENHAM & BROMLEY HA — EVENTS PROGRAMME
 # ------------------------------
-#
-#  How to add an event:
-#    1. Copy one of the events below (all of its lines).
-#    2. Paste it where you like, with an EMPTY LINE above and below.
-#    3. Change the details. Events are put in date order for you.
-#
-#  Each line starts with a label, then a colon (:), then the detail.
-#  Only Date and Title are needed. The others are optional:
-#
-#    Date:        e.g. 22/10/2026  or  22 October 2026
-#    Time:        e.g. 19:30  or  7.30pm
-#    Type:        Lecture, Visit or Social (left out = we'll guess)
-#    Intro:       small heading above the title, e.g. AGM, followed by
-#    Title:       the talk or event name
-#    Speaker:     who is giving the talk
-#    Location:    where, if not at Christ Church Hall
-#    Description: a longer description (can run over several lines)
-#    Note:        booking information, e.g. Pre-booking essential.
-#
-#  Don't worry about mistakes: if an event can't be understood it
-#  is simply left off the website, and everything else still shows.
-#  Lines starting with # (like these) are ignored.
+#  This file is normally edited on the website's events editor.
+#  Each event is a block of "Label: value" lines, with an
+#  empty line between events. Only Date and Title are needed.
 # ------------------------------
 
 Date: 17/09/2026
