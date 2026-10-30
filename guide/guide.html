@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>How to update the website</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 16mm 17mm 18mm; }
+  :root { --paper:#f6f1e7; --card:#fffdf8; --ink:#1f2a24; --muted:#5d6359; --rule:#dcd2bf;
+          --accent:#8b2e2a; --green:#2f4a3c; --brass:#b08d57; --warn:#ffe5a3; --warn-line:#c07d12; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { margin:0; font-family:'Source Sans 3', sans-serif; font-size:15.5pt; line-height:1.45; color:var(--ink); }
+  h1, h2, h3 { font-family:'Cormorant Garamond', serif; font-weight:700; line-height:1.1; margin:0; }
+  h2 { font-size:31pt; color:var(--green); margin-bottom:4mm; }
+  h2 .num { color:var(--brass); font-style:italic; margin-right:3mm; }
+  h3 { font-size:20pt; margin:6mm 0 2mm; }
+  p { margin:0 0 3.5mm; }
+  b, strong { font-weight:700; }
+  @page cover { margin:0; }
+  .page { break-after:page; }
+  .cover-page { page:cover; }
+  .page:last-child { break-after:auto; }
+  .lead { font-size:17pt; color:var(--muted); margin-bottom:6mm; }
+
+  /* Cover */
+  .cover { height:297mm; display:flex; flex-direction:column; justify-content:space-between;
+           background:var(--green); color:#fff; padding:34mm 24mm 26mm; }
+  .cover .eyebrow { letter-spacing:.2em; text-transform:uppercase; font-weight:700; font-size:12pt; color:#e6d4b0; }
+  .cover h1 { font-size:58pt; margin:6mm 0 8mm; }
+  .cover .sub { font-size:19pt; color:#e9e4d8; max-width:150mm; }
+  .cover .promise { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.25); border-radius:5mm; padding:7mm 8mm; }
+  .cover .promise h3 { margin-top:0; color:#fff; font-size:22pt; }
+  .cover .promise ol { margin:0; padding-left:7mm; font-size:16pt; }
+  .cover .promise li { margin:2mm 0; }
+
+  /* Steps */
+  .step { display:grid; grid-template-columns:13mm 1fr; gap:4mm; margin:0 0 5mm; break-inside:avoid; }
+  .step .n { width:12mm; height:12mm; border-radius:50%; background:var(--accent); color:#fff; font-weight:700;
+             font-size:17pt; display:flex; align-items:center; justify-content:center; }
+  .step .body { padding-top:1.5mm; }
+  .shot { display:block; width:100%; border:1px solid var(--rule); border-radius:3mm; margin:2.5mm 0 1mm;
+          box-shadow:0 1mm 3mm rgba(0,0,0,.08); }
+  .shot.small { width:75%; }
+  .crop { overflow:hidden; border-radius:3mm; border:1px solid var(--rule); margin:2.5mm 0 1mm; }
+  .crop .shot { border:0; margin:0; box-shadow:none; border-radius:0; }
+  .caption { font-size:12.5pt; color:var(--muted); margin-top:1mm; }
+
+  .button { display:inline-block; background:var(--accent); color:#fff; font-weight:700; border-radius:99px;
+            padding:0 3.2mm; font-size:.9em; white-space:nowrap; }
+  .button.outline { background:#fff; color:var(--ink); border:1.5px solid var(--ink); }
+  .link { color:var(--accent); font-weight:700; text-decoration:underline; }
+
+  .box { border-radius:4mm; padding:5mm 6mm; margin:4mm 0 5mm; break-inside:avoid; }
+  .box.tip { background:#eef3ee; border-left:2.5mm solid var(--green); }
+  .box.warn { background:var(--warn); border-left:2.5mm solid var(--warn-line); }
+  .box h3 { margin:0 0 2mm; font-size:18pt; }
+  .box p:last-child { margin-bottom:0; }
+  .address { white-space:nowrap; font-size:18pt; font-weight:700; background:var(--card); border:2px solid var(--ink); border-radius:3mm;
+             padding:3mm 5mm; display:inline-block; margin:1mm 0 3mm; letter-spacing:.01em; }
+  .writein { border-bottom:1.5px dotted var(--ink); display:inline-block; width:95mm; height:9mm; vertical-align:bottom; }
+
+  table.fields { width:100%; border-collapse:collapse; font-size:13.5pt; margin-top:2mm; }
+  table.fields th, table.fields td { text-align:left; vertical-align:top; padding:2.2mm 3mm; border-bottom:1px solid var(--rule); }
+  table.fields th { width:34mm; font-weight:700; }
+  table.fields tr:nth-child(odd) td, table.fields tr:nth-child(odd) th { background:#faf6ee; }
+
+  .qa h3 { font-size:18pt; color:var(--accent); margin-top:6mm; }
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<section class="page cover-page">
+  <div class="cover">
+    <div>
+      <div class="eyebrow">Beckenham &amp; Bromley Historical Association</div>
+      <h1>How to update the website</h1>
+      <p class="sub">A step-by-step guide, with pictures, to adding and changing events and the words on the website.</p>
+    </div>
+    <div class="promise">
+      <h3>Three things worth remembering</h3>
+      <ol>
+        <li><strong>Nothing changes on the website until you press Save changes.</strong> You can try things out safely.</li>
+        <li><strong>You can't break anything.</strong> Every save is kept, so an earlier version can always be put back.</li>
+        <li><strong>There's no rush.</strong> Take your time. If something looks odd, stop and ask Mike.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 1. LOGGING IN ============ -->
+<section class="page">
+  <h2><span class="num">1</span>Getting to the editing pages</h2>
+  <p class="lead">The editing pages are a private part of the website. Nobody else can see them.</p>
+
+  <div class="step"><div class="n">1</div><div class="body">
+    <p>Open your web browser (the program you use for the internet) and type this address into the bar at the very top, then press the <strong>Enter</strong> key (it may say <strong>Return</strong> or <strong>Go</strong>):</p>
+    <div class="address">beckenham-historical-association.org/edit-content</div>
+  </div></div>
+
+  <div class="step"><div class="n">2</div><div class="body">
+    <p>Type your <strong>username</strong> and <strong>password</strong> into the two boxes, then click <span class="button">Log in</span> (circled in red).</p>
+    <img class="shot" style="width:58%" src="images/01-login.png" alt="The login box">
+  </div></div>
+
+  <div class="box tip">
+    <h3>Good to know</h3>
+    <p>Once you've logged in, the computer remembers you for <strong>30 days</strong>, so you won't usually need to log in again.</p>
+    <p>My username is: <span class="writein"></span></p>
+    <p>If you forget your password, ask Mike.</p>
+  </div>
+</section>
+
+<!-- ============ 2. FINDING YOUR WAY ============ -->
+<section class="page">
+  <h2><span class="num">2</span>Finding your way around</h2>
+  <p class="lead">After logging in you'll see the <strong>Edit events</strong> page.</p>
+  <img class="shot" style="width:86%" src="images/02-editor-top.png" alt="The Edit events page">
+
+  <h3>The three buttons near the top</h3>
+  <p><strong>Events</strong> — add, change or remove events. This is the one you'll use most.</p>
+  <p><strong>Page text</strong> — change the words on the other pages, such as the Home page or Contact Us.</p>
+  <p><strong>Version history</strong> — undo a mistake by putting back an earlier version.</p>
+
+  <h3>Each event is a "card"</h3>
+  <p>Below, each event is shown as a card that looks just as it will on the website. Scroll down the page to see them all, in date order. Events that have already happened are tucked away at the bottom, under <strong>Past events</strong>.</p>
+</section>
+
+<!-- ============ 3. ADDING AN EVENT ============ -->
+<section class="page">
+  <h2><span class="num">3</span>Adding a new event</h2>
+  <p class="lead">As an example, we'll add a <em>Christmas Social Evening</em> on Thursday 10 December 2026 at 7pm.</p>
+
+  <div class="step"><div class="n">1</div><div class="body">
+    <p>Click <span class="button outline">+ Add an event</span> near the top of the page.</p>
+    <img class="shot" src="images/05-add-button.png" alt="The Add an event button">
+  </div></div>
+
+  <div class="step"><div class="n">2</div><div class="body">
+    <p>A new, empty card opens with boxes to fill in. Click in each box and type. Only the <strong>Date</strong> and <strong>Title</strong> are needed; leave any others empty if they don't apply.</p>
+    <p>As you type, the top of the card shows exactly how the event will look on the website.</p>
+  </div></div>
+</section>
+
+<section class="page">
+  <img class="shot" src="images/06-new-event.png" alt="The new event card filled in">
+  <p class="caption">Our example, filled in. The preview at the top updates as you type.</p>
+</section>
+
+<section class="page">
+  <h3 style="margin-top:0">What goes in each box</h3>
+  <table class="fields">
+    <tr><th>Date</th><td>Click the little calendar and choose the day, or type it as day/month/year, e.g. <strong>10/12/2026</strong>.</td></tr>
+    <tr><th>Time</th><td>Use the 24-hour clock: <strong>19:30</strong> for 7.30pm, <strong>14:30</strong> for 2.30pm. The small arrow shows the usual times.</td></tr>
+    <tr><th>Type</th><td><strong>Lecture</strong>, <strong>Visit</strong> or <strong>Social</strong>. This sets the colour of the card.</td></tr>
+    <tr><th>Title</th><td>The name of the talk or event.</td></tr>
+    <tr><th>Speaker</th><td>e.g. <em>Dr. Helen Lacey</em>. Leave empty for visits and socials.</td></tr>
+    <tr><th>Intro</th><td>A small heading above the title, e.g. <em>AGM, followed by</em>. Usually left empty.</td></tr>
+    <tr><th>Location</th><td>Leave <strong>empty</strong> for Christ Church Hall. Otherwise type the place, e.g. <em>Lugana Restaurant, Beckenham</em>.</td></tr>
+    <tr><th>Description</th><td>A few sentences about the event (optional).</td></tr>
+    <tr><th>Note</th><td>Shown in a little shaded box, e.g. <em>Pre-booking essential.</em></td></tr>
+  </table>
+
+  <div class="step" style="margin-top:7mm"><div class="n">3</div><div class="body">
+    <p>When you've finished, click <span class="button">Done</span> at the bottom of the card. This just closes the boxes; it doesn't save yet.</p>
+    <img class="shot" src="images/07-done.png" alt="The Done button">
+  </div></div>
+</section>
+
+<section class="page">
+  <div class="step"><div class="n">4</div><div class="body">
+    <p>A <strong>yellow box</strong> appears at the top to remind you the change isn't on the website yet. Click <span class="button">Save changes</span>.</p>
+    <img class="shot" src="images/09-unsaved.png" alt="The yellow unsaved changes box with Save changes circled">
+  </div></div>
+
+  <div class="step"><div class="n">5</div><div class="body">
+    <p>You'll see the word <strong>Saved</strong>. That's it: the event is now on the website. Click <span class="link">View it</span> if you'd like to see it.</p>
+    <img class="shot" src="images/10-saved.png" alt="The Saved message">
+  </div></div>
+
+  <div class="step"><div class="n">6</div><div class="body">
+    <p>Here is how our example looks on the website's Events page:</p>
+    <img class="shot" src="images/11-on-website.png" alt="The new event as it appears on the website">
+  </div></div>
+
+  <div class="box warn">
+    <h3>Don't forget to save!</h3>
+    <p>If you close the page or go elsewhere before clicking <strong>Save changes</strong>, your changes will be lost. While the yellow box is showing, there's something still to save.</p>
+  </div>
+</section>
+
+<!-- ============ 4. CHANGING AN EVENT ============ -->
+<section class="page">
+  <h2><span class="num">4</span>Changing an event</h2>
+  <p class="lead">For example, if a talk's start time moves from 7.30pm to 6.30pm.</p>
+
+  <div class="step"><div class="n">1</div><div class="body">
+    <p>Scroll down to the event and click <span class="button">Edit</span> under it.</p>
+    <img class="shot" src="images/03-card.png" alt="An event card with the Edit button circled">
+  </div></div>
+
+  <div class="step"><div class="n">2</div><div class="body">
+    <p>The boxes open. Click in the box you want to change, delete the old words (with the <strong>Backspace</strong> key) and type the new ones. Here we've changed the time to <strong>18:30</strong>.</p>
+    <div class="crop" style="height:62mm"><img class="shot" src="images/12-change-time.png" alt="Changing the time box"></div>
+  </div></div>
+
+  <div class="step"><div class="n">3</div><div class="body">
+    <p>Click <span class="button">Done</span>, then <span class="button">Save changes</span> at the top, just as when adding an event.</p>
+  </div></div>
+</section>
+
+<!-- ============ 5. DUPLICATE & DELETE ============ -->
+<section class="page">
+  <h2><span class="num">5</span>Copying and removing events</h2>
+
+  <h3>Copying an event (Duplicate)</h3>
+  <p>Handy for something that happens every year, like the Annual Dinner. Click <span class="button outline">Duplicate</span> under the old one and a copy appears, ready for you to change the date and any details. Then click <span class="button">Done</span> and <span class="button">Save changes</span>.</p>
+  <img class="shot" src="images/14-duplicate.png" alt="The Duplicate button circled">
+
+  <h3>Removing an event (Delete)</h3>
+  <p>Click the red word <span class="link">Delete</span> on the right of the card. It will ask <strong>"Delete this event?"</strong>. Click <span class="button">Yes, delete</span>, or <span class="link">Cancel</span> if you've changed your mind. Then click <span class="button">Save changes</span>.</p>
+  <img class="shot" src="images/15-delete.png" alt="The Delete this event question">
+
+  <div class="box tip">
+    <p>There's no need to delete events once they've happened. They move to <strong>Past events</strong> by themselves.</p>
+  </div>
+</section>
+
+<!-- ============ 6. BOLD AND LINKS ============ -->
+<section class="page">
+  <h2><span class="num">6</span>Bold writing and links</h2>
+  <p class="lead">The <strong>Description</strong> and <strong>Note</strong> boxes have some extra buttons.</p>
+  <img class="shot" src="images/16-toolbar.png" alt="The Bold, Italic, Underline and Link buttons">
+
+  <h3>To make words bold</h3>
+  <div class="step"><div class="n">1</div><div class="body"><p>Select the words: hold the mouse button down at the start of them, drag to the end, and let go. They'll be highlighted.</p></div></div>
+  <div class="step"><div class="n">2</div><div class="body"><p>Click <strong>B Bold</strong>. <em>Italic</em> and <u>Underline</u> work the same way.</p></div></div>
+
+  <h3>To add a link to another website</h3>
+  <div class="step"><div class="n">1</div><div class="body"><p>Select the words that should be the link, then click <strong>Link</strong>.</p></div></div>
+  <div class="step"><div class="n">2</div><div class="body"><p>Type the web address (for example <em>www.history.org.uk</em>) or an email address, then click <span class="button">Add link</span>.</p></div></div>
+  <p>To take a link off again, select the words and click <strong>Remove link</strong>.</p>
+</section>
+
+<!-- ============ 7. OOPS ============ -->
+<section class="page">
+  <h2><span class="num">7</span>Oops! Undoing a mistake</h2>
+
+  <h3>Before you've saved</h3>
+  <p>Click <span class="link">Undo all changes</span> in the yellow box. Everything goes back to how it was when you last saved.</p>
+  <img class="shot" src="images/13-undo.png" alt="Undo all changes circled">
+
+  <h3>After you've saved</h3>
+  <p>Click <strong>Version history</strong> at the top of the page. Every save from the last week is listed, newest first; the one marked <strong>On the website now</strong> is what people can see.</p>
+  <p>Find the version from before the mistake and click <span class="button outline">Put this version back</span>, then <span class="button">Yes, put it back</span>. You can click <em>"Show me exactly what would change"</em> first if you'd like to check.</p>
+  <img class="shot" style="width:82%" src="images/18-history.png" alt="The Version history page">
+  <p class="caption">Don't worry about putting back the wrong one: the version on the website is always kept too, so this can itself be undone.</p>
+</section>
+
+<!-- ============ 8. PAGE TEXT ============ -->
+<section class="page">
+  <h2><span class="num">8</span>Changing words on other pages</h2>
+  <p class="lead">Such as the introduction on the Home page, or the names and email addresses on Contact Us.</p>
+
+  <div class="step"><div class="n">1</div><div class="body"><p>Click <strong>Page text</strong> at the top of the editing pages.</p></div></div>
+  <div class="step"><div class="n">2</div><div class="body"><p>Click the name of the page you want: <strong>Home</strong>, <strong>Events</strong>, <strong>Membership</strong>, <strong>Bulletin</strong>, <strong>Links</strong> or <strong>Contact Us</strong>.</p></div></div>
+  <div class="step"><div class="n">3</div><div class="body"><p>Change the words in the boxes on the left. The picture on the right shows how the page will look.</p></div></div>
+  <div class="step"><div class="n">4</div><div class="body"><p>Click <span class="button">Save changes</span>.</p></div></div>
+  <img class="shot" src="images/17-pages.png" alt="The Page text editor">
+</section>
+
+<!-- ============ 9. HELP ============ -->
+<section class="page qa">
+  <h2><span class="num">9</span>If something seems wrong</h2>
+
+  <h3>"I've saved, but the website still shows the old version"</h3>
+  <p>Wait a minute or two, then refresh the page (the round arrow at the top of the browser). Very occasionally it can take up to 5 minutes.</p>
+
+  <h3>"It says I've been logged out"</h3>
+  <p>Your changes are still there; don't close the page. Open a new tab, go to the editing address and log in again. Then come back to the first tab and click <strong>Save changes</strong>.</p>
+
+  <h3>"An event is under Needs a look"</h3>
+  <p>Something in it couldn't be understood, often the date. It isn't on the website yet. Correct it, or delete it if it isn't needed, then save.</p>
+
+  <h3>"A box has a red message under it"</h3>
+  <p>Something needs fixing before it can be saved, for example a missing date or title. The message says what.</p>
+
+  <h3>"I'm not sure what I've done"</h3>
+  <p>If you haven't saved, click <strong>Undo all changes</strong>. If you have, use <strong>Version history</strong> (section 7). Or just stop and ask Mike. Nothing is ever lost.</p>
+
+  <div class="box tip" style="margin-top:8mm">
+    <h3>The editing address again</h3>
+    <div class="address" style="margin-bottom:0">beckenham-historical-association.org/edit-content</div>
+  </div>
+</section>
+
+</body>
+</html>
